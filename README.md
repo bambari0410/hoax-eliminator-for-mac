@@ -18,29 +18,42 @@
 
 ## 찾는 프로그램
 
-| 프로그램 | 제작사 |
-|---|---|
-| AhnLab Safe Transaction (ASTx) | AhnLab |
-| TouchEn nxKey | RaonSecure |
-| INISAFE CrossWeb EX | INITECH |
-| iniLINE CrossEX / CrossWarpEX | iniLINE |
-| Veraport | Wizvera |
-| Delfino | Wizvera |
-| KeySharp Biz / NX Biz | RaonSecure |
-| IPinside LWS Agent | Interezen |
-| AnySign4PC | SoftForum (Hancom Secure) |
-| nProtect Online Security | INCA Internet |
-| MagicLine4NX | DreamSecurity |
-| MarkAny MaSafeViewer / ePageSafer | MarkAny |
-| SecuKit NXS | KICA |
-| KSign CASE Agent | KSign |
-| VestCert | Yettiesoft |
-| XecureWeb\* | SoftForum |
-| UniSign\* | CrossCert |
+28종을 찾아요. "주로 쓰는 곳"은 2026년 10월에 은행·관공서 49곳을 조사해서, 맥에서 설치하라고 안내하는 곳을 적은 거예요.
+
+| 프로그램 | 제작사 | 주로 쓰는 곳 |
+|---|---|---|
+| AhnLab Safe Transaction (ASTx) | AhnLab | 신한·우리·SC제일·씨티·수협·산업은행, 새마을금고, 이택스 |
+| TouchEn nxKey | RaonSecure | 홈택스, 위택스, 인터넷등기소, 국민건강보험, 고용24, 우체국예금 |
+| INISAFE CrossWeb EX | INITECH | 신한·농협·SC제일·수협·부산은행 |
+| iniLINE CrossEX (공용 모듈) | iniLINE | nxKey·KSCertRelay·nxWeb과 함께 설치돼요 |
+| Veraport | Wizvera | 국민·하나·SC제일·IBK기업·수협은행, 홈택스, 국민건강보험 |
+| Delfino | Wizvera | 국민·하나·IBK기업·씨티은행, 새마을금고, 신협 |
+| KeySharp Biz / NX Biz | RaonSecure | 위택스, 국민연금, 이파인 |
+| IPinside LWS Agent | Interezen | 우리·하나·IBK기업·SC제일·수협은행, 홈택스 |
+| AnySign4PC | SoftForum (Hancom Secure) | 정부24, 인터넷등기소, 전자소송, 고용24, 4대보험, 병무청 |
+| nProtect Online Security | INCA Internet | IBK기업은행, 우체국, 이택스, 복지로, 특허로 |
+| MagicLine4NX | DreamSecurity | 홈택스, 나라장터 |
+| MarkAny MaSafeViewer / ePageSafer | MarkAny | 홈택스(증명서 발급), 국민건강보험, 신협 |
+| SecuKit NXS | KICA | |
+| KSign CASE Agent | KSign | 교육청 |
+| VestCert | Yettiesoft | |
+| XecureWeb | SoftForum | 신협(예전 버전) |
+| UniSign\* | CrossCert | |
+| KSCertRelay nx (인증서 복사) | RaonSecure | 위택스, 국민건강보험, 국민연금, 하나은행 |
+| TouchEn nxFirewall | RaonSecure | 홈택스 |
+| TouchEn nxWeb (화면 캡처 방지) | RaonSecure | 국민건강보험, 이파인 |
+| RAON K (대용량 파일 전송) | RAONWIZ | 홈택스 |
+| NTSMagicXMLSecurityNP (홈택스 전자서명) | DreamSecurity | 홈택스 |
+| NTSFileCryptNP (홈택스 신고파일 암호화) | DreamSecurity | 홈택스 |
+| Printmade3 (웹 인쇄) | Nagosoft | IBK기업·신한·씨티·수협은행 |
+| CertShare xFree (인증서 복사) | SoftForum (Hancom Secure) | 우체국예금, 4대보험 |
+| nProtect SecuLog | INCA Internet | 국민은행, 신협 |
+| Delfino CertConverter (인증서 변환) | Wizvera | 국민은행 |
+| AhnLab Online Security 방화벽 | AhnLab | 부산은행(예전 버전) |
 
 \* 맥용 설치 파일을 구하지 못해서, 찾는 경로를 확인하지 못했어요.
 
-나머지 프로그램은 각 제작사가 배포하는 맥용 설치 파일을 설치하지 않고 풀어서, 어디에 무엇이 깔리는지 확인했어요.
+나머지 프로그램은 각 제작사가 배포하는 맥용 설치 파일을 설치하지 않고 풀어서, 어디에 무엇이 깔리는지 확인했어요. 예전 브라우저 플러그인 버전(구형 IPinside, CrossWeb, Netizen, MaSafeBrowser)도 같은 항목에서 함께 찾아요.
 
 ## 윈도우판과 다른 점
 

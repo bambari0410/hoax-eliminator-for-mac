@@ -1,0 +1,560 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hoax Eliminator for Mac | 맥에 남은 은행 보안 프로그램 정리</title>
+<meta name="description" content="은행이나 관공서 사이트에서 깔라고 했던 보안 프로그램을 찾아서 한 번에 정리하는 무료 맥용 앱이에요. 파일은 휴지통으로 옮기고, 키체인에 남은 업체 루트 인증서까지 챙겨요.">
+<link rel="canonical" href="https://bambari0410.github.io/hoax-eliminator-for-mac/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hoax Eliminator for Mac">
+<meta property="og:description" content="맥에 남은 은행·관공서 보안 프로그램을 찾아서 한 번에 정리하는 무료 앱">
+<meta property="og:url" content="https://bambari0410.github.io/hoax-eliminator-for-mac/">
+<meta property="og:image" content="https://bambari0410.github.io/hoax-eliminator-for-mac/icon.png">
+<meta name="theme-color" content="#0b0d17">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+:root {
+  --bg: #0b0d17;
+  --surface: rgba(255, 255, 255, 0.045);
+  --surface-2: rgba(255, 255, 255, 0.075);
+  --line: rgba(255, 255, 255, 0.09);
+  --ink: #eef0fa;
+  --muted: #a6abc6;
+  --dim: #767b99;
+  --blue: #4c6ef5;
+  --blue-strong: #3b5bdb;
+  --blue-soft: #91a7ff;
+  --orange: #ff8a3d;
+  --green: #38d9a9;
+  --radius: 22px;
+  --container: 1120px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --font: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { display: block; max-width: 100%; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.container { width: min(var(--container), 100% - 32px); margin-inline: auto; }
+
+/* Background glow */
+.glow { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.glow i { position: absolute; border-radius: 50%; filter: blur(110px); opacity: 0.5; animation: drift 26s ease-in-out infinite alternate; }
+.glow i:nth-child(1) { width: 620px; height: 620px; left: -160px; top: -120px; background: #3b5bdb; }
+.glow i:nth-child(2) { width: 520px; height: 520px; right: -140px; top: 18%; background: #7048e8; opacity: 0.35; animation-delay: -8s; }
+.glow i:nth-child(3) { width: 460px; height: 460px; left: 30%; bottom: -200px; background: #ff8a3d; opacity: 0.18; animation-delay: -16s; }
+@keyframes drift { to { transform: translate(60px, 40px) scale(1.08); } }
+
+/* Nav */
+.nav { position: sticky; top: 0; z-index: 20; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); background: rgba(11, 13, 23, 0.65); border-bottom: 1px solid var(--line); }
+.nav .container { display: flex; align-items: center; gap: 28px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: -0.01em; }
+.brand img { width: 30px; height: 30px; }
+.nav-links { display: flex; gap: 22px; font-size: 14px; color: var(--muted); }
+.nav-links a:hover { color: var(--ink); }
+.nav-actions { margin-left: auto; display: flex; gap: 10px; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 999px; font-weight: 600; font-size: 15px; border: 1px solid var(--line); background: var(--surface); transition: transform 0.2s var(--ease), background 0.2s, box-shadow 0.2s; white-space: nowrap; }
+.btn:hover { transform: translateY(-1px); background: var(--surface-2); }
+.btn.primary { background: linear-gradient(135deg, #5c7cfa, var(--blue-strong)); border-color: transparent; box-shadow: 0 10px 30px -10px rgba(76, 110, 245, 0.8); }
+.btn.primary:hover { box-shadow: 0 14px 36px -10px rgba(76, 110, 245, 0.95); }
+.btn.small { height: 36px; padding: 0 14px; font-size: 13px; }
+.btn svg { width: 18px; height: 18px; }
+.btn.small svg { width: 15px; height: 15px; }
+svg.i { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Hero */
+.hero { padding: 72px 0 96px; }
+.hero .container { display: grid; grid-template-columns: 1fr 1.05fr; gap: 56px; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); font-size: 13px; color: var(--muted); }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+.eyebrow { margin: 22px 0 10px; font-weight: 600; color: var(--blue-soft); }
+h1 { margin: 0; font-size: clamp(40px, 6vw, 66px); line-height: 1.12; letter-spacing: -0.035em; font-weight: 800; }
+.grad { background: linear-gradient(100deg, #91a7ff 0%, #74c0fc 55%, #63e6be 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.dot { color: var(--orange); }
+.lead { margin: 22px 0 30px; font-size: 17px; color: var(--muted); max-width: 520px; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.meta { margin-top: 16px; font-size: 13px; color: var(--dim); }
+
+/* Mock window */
+.mock-wrap { position: relative; }
+.mock { border-radius: 14px; overflow: hidden; background: #1f2029; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 0, 0, 0.4); font-size: 12.5px; color: #e4e5ec; user-select: none; }
+.titlebar { display: flex; align-items: center; height: 38px; padding: 0 14px; background: #2a2b35; border-bottom: 1px solid rgba(0, 0, 0, 0.35); position: relative; }
+.lights { display: flex; gap: 8px; }
+.lights i { width: 12px; height: 12px; border-radius: 50%; background: #ff5f57; }
+.lights i:nth-child(2) { background: #febc2e; }
+.lights i:nth-child(3) { background: #28c840; }
+.titlebar b { position: absolute; left: 50%; transform: translateX(-50%); font-weight: 600; font-size: 13px; color: #c9cad3; }
+.mock-body { padding: 12px 14px 0; display: grid; gap: 10px; }
+.mock-head { display: flex; align-items: center; justify-content: space-between; }
+.mock-head .tools { display: flex; gap: 12px; color: #a9abb8; }
+.mock-head .tools svg { width: 15px; height: 15px; }
+.check { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; }
+.check input { appearance: none; -webkit-appearance: none; margin: 0; width: 14px; height: 14px; border-radius: 4px; border: 1px solid #5d5f6e; background: #2c2d38; display: grid; place-content: center; cursor: pointer; }
+.check input:checked { background: var(--blue); border-color: var(--blue); }
+.check input:checked::after { content: ""; width: 7px; height: 4px; border: solid #fff; border-width: 0 0 2px 2px; transform: rotate(-45deg) translate(1px, -1px); }
+.check input:disabled { opacity: 0.4; cursor: default; }
+.table { border: 1px solid #383946; border-radius: 6px; overflow: hidden; }
+.tr { display: grid; grid-template-columns: 1fr 64px 86px; align-items: center; min-height: 38px; padding: 0 10px; gap: 8px; }
+.tr.th { min-height: 26px; background: #262731; color: #a9abb8; font-size: 11.5px; border-bottom: 1px solid #383946; }
+.tbody .tr:nth-child(even) { background: rgba(255, 255, 255, 0.03); }
+.tbody .tr { cursor: pointer; }
+.tbody .tr.sel { background: #2b4bc9 !important; }
+.tbody .tr.sel .vendor, .tbody .tr.sel .date { color: #dbe2ff; }
+.prog { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.prog .name { display: flex; flex-direction: column; min-width: 0; line-height: 1.3; }
+.prog .name span:first-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vendor { font-size: 11px; color: #8c8e9e; }
+.date { color: #8c8e9e; font-variant-numeric: tabular-nums; }
+.badge { display: inline-block; padding: 1px 7px; border-radius: 5px; font-size: 11px; font-weight: 600; }
+.badge.sys { color: #ffb37a; background: rgba(255, 138, 61, 0.16); }
+.badge.usr { color: #63e6be; background: rgba(56, 217, 169, 0.14); }
+.badge.work { color: #a5b8ff; background: rgba(76, 110, 245, 0.22); margin-left: 4px; flex: none; }
+.detail { height: 104px; overflow: hidden; border: 1px solid #383946; border-radius: 6px; padding: 8px 10px; background: #1a1b23; display: grid; align-content: start; gap: 4px; }
+.trace { display: grid; grid-template-columns: 82px 1fr; gap: 8px; font-size: 11.5px; line-height: 1.45; }
+.trace span:first-child { color: #8c8e9e; font-weight: 600; }
+.trace span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trace.warn span { color: #ffa94d; }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; font-size: 12px; }
+.mock-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.mock-btns span { padding: 3px 10px; border-radius: 6px; background: #3a3b47; font-size: 12px; box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset; }
+.mock-btns span.def { background: var(--blue); }
+.mock-btns .gap { flex: 1; background: none; box-shadow: none; padding: 0; }
+.status { margin: 0 -14px; padding: 6px 14px; border-top: 1px solid #33343f; background: #262731; color: #9fa1b0; font-size: 11.5px; display: flex; gap: 10px; white-space: nowrap; overflow: hidden; }
+.status b { font-weight: 500; font-variant-numeric: tabular-nums; }
+.caption { margin-top: 12px; text-align: center; font-size: 13px; color: var(--dim); }
+
+/* Sections */
+section { padding: 96px 0; }
+.sec-head { text-align: center; max-width: 680px; margin: 0 auto 48px; }
+.sec-head h2 { margin: 0 0 12px; font-size: clamp(30px, 4vw, 44px); line-height: 1.2; letter-spacing: -0.03em; font-weight: 800; }
+.sec-head p { margin: 0; color: var(--muted); }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; transition: border-color 0.3s, background 0.3s, transform 0.3s var(--ease); }
+.card:hover { border-color: rgba(145, 167, 255, 0.28); background: rgba(255, 255, 255, 0.06); }
+.card h3 { margin: 16px 0 8px; font-size: 18px; letter-spacing: -0.015em; }
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
+.ico { width: 44px; height: 44px; border-radius: 13px; display: grid; place-items: center; background: rgba(76, 110, 245, 0.16); color: var(--blue-soft); }
+.ico svg { width: 22px; height: 22px; }
+.ico.orange { background: rgba(255, 138, 61, 0.14); color: #ffa94d; }
+.ico.green { background: rgba(56, 217, 169, 0.13); color: var(--green); }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.num { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-weight: 700; background: linear-gradient(135deg, #5c7cfa, #22b8cf); box-shadow: 0 8px 20px -8px rgba(76, 110, 245, 0.8); }
+
+/* Programs */
+.progs { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 0; padding: 0; }
+.progs li { list-style: none; flex: 0 0 calc((100% - 36px) / 4); padding: 16px 18px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.progs b { display: block; font-size: 15px; letter-spacing: -0.01em; }
+.progs span { font-size: 13px; color: var(--dim); }
+.progs sup { color: var(--orange); }
+.note { margin-top: 18px; text-align: center; font-size: 14px; color: var(--dim); }
+
+/* Compare */
+.vs .card h3 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
+.vs .card ul { margin: 14px 0 0; padding-left: 18px; color: var(--muted); }
+.vs .card li + li { margin-top: 8px; }
+.vs .mac { border-color: rgba(145, 167, 255, 0.35); background: linear-gradient(160deg, rgba(76, 110, 245, 0.14), rgba(255, 255, 255, 0.03)); }
+.tag { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--surface-2); color: var(--muted); }
+.mac .tag { background: rgba(76, 110, 245, 0.25); color: #c5d0ff; }
+
+/* Specs */
+.specs { max-width: 760px; margin: 0 auto; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--surface); }
+.specs div { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding: 15px 24px; border-top: 1px solid var(--line); }
+.specs div:first-child { border-top: 0; }
+.specs dt { color: var(--dim); font-weight: 600; }
+.specs dd { margin: 0; }
+.specs dl { margin: 0; }
+
+/* FAQ */
+.faq { max-width: 800px; margin: 0 auto; display: grid; gap: 10px; }
+.faq details { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+.faq summary { cursor: pointer; list-style: none; padding: 18px 22px; font-weight: 600; display: flex; justify-content: space-between; gap: 16px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--blue-soft); font-size: 22px; line-height: 1; transition: transform 0.25s var(--ease); }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details p { margin: 0; padding: 0 22px 20px; color: var(--muted); }
+
+/* Download */
+.dl { text-align: center; padding: 56px 32px; border-radius: 28px; border: 1px solid rgba(145, 167, 255, 0.3); background: radial-gradient(120% 140% at 50% 0%, rgba(76, 110, 245, 0.28), rgba(255, 255, 255, 0.03) 60%); }
+.dl img { width: 96px; height: 96px; margin: 0 auto 18px; }
+.dl h2 { margin: 0 0 10px; font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.03em; line-height: 1.2; }
+.dl > p { margin: 0 auto 28px; color: var(--muted); max-width: 520px; }
+.dl .cta { justify-content: center; }
+.cmd { margin: 28px auto 0; max-width: 560px; display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 18px; border-radius: 14px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); text-align: left; }
+.cmd code { flex: 1; font-size: 13.5px; color: #c5d0ff; overflow-x: auto; white-space: nowrap; }
+.cmd button { flex: none; height: 32px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+.steps { margin: 28px auto 0; max-width: 640px; text-align: left; display: grid; gap: 10px; counter-reset: s; padding: 0; }
+.steps li { list-style: none; position: relative; padding-left: 36px; color: var(--muted); font-size: 15px; }
+.steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: 1px; width: 24px; height: 24px; border-radius: 8px; background: var(--surface-2); color: var(--ink); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+.steps-title { margin: 32px 0 0; font-weight: 700; }
+.small-links { margin-top: 18px; font-size: 14px; color: var(--dim); }
+.small-links a { color: var(--blue-soft); }
+.steps + .small-links { margin-top: 28px; }
+
+footer { padding: 48px 0 64px; border-top: 1px solid var(--line); color: var(--dim); font-size: 14px; }
+footer .container { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 20px; }
+footer nav { display: flex; flex-wrap: wrap; gap: 18px; }
+footer a:hover { color: var(--ink); }
+footer p { margin: 8px 0 0; max-width: 520px; }
+
+/* Reveal */
+.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+.js .reveal.in { opacity: 1; transform: none; }
+
+@media (max-width: 960px) {
+  .hero .container { grid-template-columns: 1fr; gap: 48px; }
+  .nav-links { display: none; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .progs li { flex-basis: calc((100% - 24px) / 3); }
+}
+@media (max-width: 640px) {
+  section { padding: 72px 0; }
+  .hero { padding: 48px 0 72px; }
+  .grid3, .grid2 { grid-template-columns: 1fr; }
+  .progs { gap: 10px; }
+  .progs li { flex-basis: calc((100% - 10px) / 2); padding: 14px; }
+  .nav-actions .gh { display: none; }
+  .tr { grid-template-columns: 1fr 56px; }
+  .tr > :nth-child(3) { display: none; }
+  .opts { grid-template-columns: 1fr; }
+  .specs div { grid-template-columns: 1fr; gap: 2px; padding: 14px 18px; }
+  .dl { padding: 44px 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .glow i { animation: none; }
+  .js .reveal { opacity: 1; transform: none; transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"><i></i><i></i><i></i></div>
+
+<header class="nav">
+  <div class="container">
+    <a class="brand" href="#top"><img src="icon.png" alt="" width="30" height="30">Hoax Eliminator</a>
+    <nav class="nav-links" aria-label="페이지 안내">
+      <a href="#how">사용법</a>
+      <a href="#features">기능</a>
+      <a href="#programs">지원 프로그램</a>
+      <a href="#safety">안전</a>
+      <a href="#faq">자주 묻는 질문</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn small gh" href="https://github.com/bambari0410/hoax-eliminator-for-mac"><svg class="i" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6M16 6l6 6-6 6"/></svg>GitHub</a>
+      <a class="btn small primary" href="#download"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>다운로드</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="container">
+      <div class="reveal">
+        <span class="pill">v0.1 공개 · 무료 오픈소스</span>
+        <p class="eyebrow">macOS용 보안 프로그램 정리 도구</p>
+        <h1>은행 보안 프로그램,<br><span class="grad">한 번에 정리 끝</span><span class="dot">.</span></h1>
+        <p class="lead">은행이나 관공서 사이트에서 깔라고 했던 보안 프로그램은 볼일을 마친 뒤에도 맥에 그대로 남아 있어요. 로그인할 때마다 뒤에서 돌고, 키체인에는 업체 루트 인증서까지 남아요. Hoax Eliminator for Mac이 한 번에 찾아서 보여 주고, 고른 것만 휴지통으로 정리해요.</p>
+        <div class="cta">
+          <a class="btn primary" href="#download"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>macOS용 다운로드</a>
+          <a class="btn" href="#programs">지원 프로그램 17종 보기</a>
+        </div>
+        <p class="meta">v0.1 · macOS 13 이상 · Apple Silicon, Intel 모두 지원 · 무료(MIT)</p>
+      </div>
+
+      <div class="mock-wrap reveal">
+        <div class="mock" role="group" aria-label="앱 화면 예시">
+          <div class="titlebar"><div class="lights"><i></i><i></i><i></i></div><b>Hoax Eliminator for Mac</b></div>
+          <div class="mock-body">
+            <div class="mock-head">
+              <label class="check"><input type="checkbox" id="all" aria-label="모두 선택"><span id="found">발견된 보안 프로그램: 6개</span></label>
+              <span class="tools" aria-hidden="true">
+                <svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>
+                <svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg>
+                <svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7M12 17h.01"/></svg>
+              </span>
+            </div>
+            <div class="table">
+              <div class="tr th"><span>프로그램</span><span>위치</span><span>설치일</span></div>
+              <div class="tbody" id="rows"></div>
+            </div>
+            <div class="detail" id="detail" aria-live="polite"></div>
+            <div class="opts">
+              <label class="check"><input type="checkbox" checked>루트 인증서도 지우기 (권장)</label>
+              <label class="check"><input type="checkbox" checked>설치 기록도 지우기</label>
+              <label class="check"><input type="checkbox">목록에 없는 숨은 프로그램도 찾기</label>
+              <label class="check"><input type="checkbox" checked>업무용 프로그램은 지우지 않기</label>
+            </div>
+            <div class="mock-btns" aria-hidden="true"><span>업무용 프로그램 관리…</span><span class="gap"></span><span>목록 다시 읽기</span><span class="def">선택 항목 제거</span><span>모두 제거</span></div>
+            <div class="status"><b id="count">5/6 선택 · 검사 대상 17종</b><span>|</span><span>보안 프로그램 6개를 찾았어요. 지운 파일은 휴지통으로 가요.</span></div>
+          </div>
+        </div>
+        <p class="caption">화면은 예시예요. 목록에서 프로그램을 눌러 보세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="container">
+      <div class="sec-head reveal">
+        <h2>세 단계면 정리 끝</h2>
+        <p>앱을 열고, 확인하고, 지우면 돼요.</p>
+      </div>
+      <div class="grid3">
+        <div class="card reveal"><div class="num">1</div><h3>열면 바로 찾아요</h3><p>앱을 열면 맥 구석구석에 남은 보안 프로그램 17종을 찾아서 목록으로 보여 줘요. 언제 깔렸는지 설치일도 함께 보여요.</p></div>
+        <div class="card reveal"><div class="num">2</div><h3>무엇이 남았는지 확인해요</h3><p>프로그램을 누르면 무엇이 어디에 남았는지 쉬운 말로 알려 줘요. 업무에 필요한 프로그램은 체크를 빼 두세요.</p></div>
+        <div class="card reveal"><div class="num">3</div><h3>휴지통으로 정리해요</h3><p>[선택 항목 제거]를 누르면 파일을 휴지통으로 옮겨요. 맥 전체에 깔린 항목은 관리자 암호를 한 번 물어봐요.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="container">
+      <div class="sec-head reveal">
+        <h2>남은 흔적까지 꼼꼼하게</h2>
+        <p>프로그램 폴더만 지우고 끝내지 않아요. 설치하면서 여기저기 남긴 것까지 찾아요.</p>
+      </div>
+      <div class="grid3">
+        <div class="card reveal"><div class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div><h3>17종을 한 번에</h3><p>안랩, 라온시큐어, 위즈베라, 이니텍처럼 국내 은행과 관공서에서 많이 쓰는 보안 프로그램 17종을 한 번에 찾아요.</p></div>
+        <div class="card reveal"><div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div><h3>쉬운 말로 설명해요</h3><p>무엇이 남았는지 '자동 실행 설정', '브라우저 연결', '설치 기록'처럼 쉬운 말로 알려 줘요. 경로를 몰라도 판단할 수 있어요.</p></div>
+        <div class="card reveal"><div class="ico orange"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="9" r="6"/><path d="M8.5 14 7 22l5-3 5 3-1.5-8"/></svg></div><h3>루트 인증서까지</h3><p>키체인에 남은 업체 루트 인증서도 찾아서 함께 지워요. 이 인증서는 제작사 제거 프로그램으로 지워도 남는 경우가 많아요.</p></div>
+        <div class="card reveal"><div class="ico"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></div><h3>업무용은 남겨 둬요</h3><p>회사 업무에 꼭 필요한 프로그램은 '업무용'으로 표시해 두세요. [모두 제거]를 눌러도 그 프로그램은 남겨 둬요.</p></div>
+        <div class="card reveal"><div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div><h3>숨은 프로그램도 찾아요</h3><p>목록에 없는 프로그램도 이름으로 찾아볼 수 있어요. 정확하지 않을 수 있어서 처음에는 체크하지 않은 상태로 보여 줘요.</p></div>
+        <div class="card reveal"><div class="ico green"><svg class="i" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 12.9a10 10 0 0 1 5.2-2.8M19 12.9a10 10 0 0 0-3-2.1M12 20h.01"/></svg></div><h3>인터넷 없이, 무료로</h3><p>맥 안에서만 찾고 정리해요. 인터넷에 연결하지 않고, 아무것도 보내지 않아요. 코드가 공개된 무료 오픈소스예요.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="programs">
+    <div class="container">
+      <div class="sec-head reveal">
+        <h2>찾는 보안 프로그램 17종</h2>
+        <p>각 제작사가 배포하는 맥용 설치 파일을 직접 풀어 보고, 어디에 무엇이 깔리는지 확인했어요.</p>
+      </div>
+      <ul class="progs reveal">
+        <li><b>AhnLab Safe Transaction (ASTx)</b><span>AhnLab</span></li>
+        <li><b>TouchEn nxKey</b><span>RaonSecure</span></li>
+        <li><b>INISAFE CrossWeb EX</b><span>INITECH</span></li>
+        <li><b>iniLINE CrossEX / CrossWarpEX</b><span>iniLINE</span></li>
+        <li><b>Veraport</b><span>Wizvera</span></li>
+        <li><b>Delfino</b><span>Wizvera</span></li>
+        <li><b>KeySharp Biz / NX Biz</b><span>RaonSecure</span></li>
+        <li><b>IPinside LWS Agent</b><span>Interezen</span></li>
+        <li><b>AnySign4PC</b><span>SoftForum (Hancom Secure)</span></li>
+        <li><b>nProtect Online Security</b><span>INCA Internet</span></li>
+        <li><b>MagicLine4NX</b><span>DreamSecurity</span></li>
+        <li><b>MarkAny MaSafeViewer / ePageSafer</b><span>MarkAny</span></li>
+        <li><b>SecuKit NXS</b><span>KICA</span></li>
+        <li><b>KSign CASE Agent</b><span>KSign</span></li>
+        <li><b>VestCert</b><span>Yettiesoft</span></li>
+        <li><b>XecureWeb<sup>*</sup></b><span>SoftForum</span></li>
+        <li><b>UniSign<sup>*</sup></b><span>CrossCert</span></li>
+      </ul>
+      <p class="note">* 맥용 설치 파일을 구하지 못해서, 찾는 경로를 직접 확인하지 못했어요.</p>
+    </div>
+  </section>
+
+  <section id="mac">
+    <div class="container">
+      <div class="sec-head reveal">
+        <h2>윈도우판과 무엇이 다른가요?</h2>
+        <p>맥에는 '프로그램 추가/제거' 목록이 없어서, 찾는 방법부터 달라요.</p>
+      </div>
+      <div class="grid2 vs">
+        <div class="card reveal">
+          <h3>윈도우용 구라제거기 <span class="tag">Windows</span></h3>
+          <ul>
+            <li>'프로그램 추가/제거' 목록에서 보안 프로그램을 찾아요.</li>
+            <li>제작사가 넣어 둔 제거 프로그램을 차례로 실행해요.</li>
+            <li>ActiveX나 키보드 보안 드라이버처럼 윈도우에만 있는 것도 다뤄요.</li>
+          </ul>
+        </div>
+        <div class="card mac reveal">
+          <h3>Hoax Eliminator for Mac <span class="tag">macOS</span></h3>
+          <ul>
+            <li>설치하면서 남긴 흔적을 하나하나 직접 찾아요.</li>
+            <li>로그인할 때마다 뒤에서 도는 자동 실행 설정을 정리해요.</li>
+            <li>키체인에 남은 업체 루트 인증서까지 챙겨요.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="safety">
+    <div class="container">
+      <div class="sec-head reveal">
+        <h2>지울 때도 안전하게</h2>
+        <p>지우는 프로그램일수록 조심해야 해요. 그래서 되돌릴 수 있는 방법을 먼저 골랐어요.</p>
+      </div>
+      <div class="grid2">
+        <div class="card reveal"><div class="ico green"><svg class="i" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></div><h3>휴지통으로만 옮겨요</h3><p>파일은 바로 지우지 않고 휴지통으로 옮겨요. 잘못 지웠다면 휴지통에서 꺼내면 돼요.</p></div>
+        <div class="card reveal"><div class="ico green"><svg class="i" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>손대지 않는 곳이 있어요</h3><p>공동인증서(NPKI) 폴더, 키체인의 다른 인증서, macOS 시스템 폴더는 건드리지 않아요.</p></div>
+        <div class="card reveal"><div class="ico green"><svg class="i" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><h3>같이 쓰는 폴더는 마지막에</h3><p>여러 회사 프로그램이 함께 쓰는 폴더는 안이 비어 있을 때만 정리해요.</p></div>
+        <div class="card reveal"><div class="ico green"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></svg></div><h3>실행 전에 모두 보여 드려요</h3><p>관리자 암호가 필요한 작업은 무엇을 실행하는지 먼저 보여 드려요. 암호 창에서 취소하면 아무것도 바뀌지 않아요.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="specs">
+    <div class="container">
+      <div class="sec-head reveal"><h2>한눈에 보기</h2></div>
+      <div class="specs reveal">
+        <dl>
+          <div><dt>가격</dt><dd>무료</dd></div>
+          <div><dt>라이선스</dt><dd>MIT (오픈소스)</dd></div>
+          <div><dt>버전</dt><dd>0.1</dd></div>
+          <div><dt>운영체제</dt><dd>macOS 13 이상</dd></div>
+          <div><dt>프로세서</dt><dd>Apple Silicon, Intel (하나의 앱에 둘 다 들어 있어요)</dd></div>
+          <div><dt>검사 대상</dt><dd>보안 프로그램 17종, 업체 루트 인증서, 설치 기록</dd></div>
+          <div><dt>지우는 방식</dt><dd>휴지통으로 이동 (바로 삭제하지 않아요)</dd></div>
+          <div><dt>인터넷</dt><dd>쓰지 않아요 (아무것도 보내지 않아요)</dd></div>
+          <div><dt>서명</dt><dd>Apple 공증 전이라 처음 한 번 직접 허용해야 해요</dd></div>
+          <div><dt>언어</dt><dd>한국어</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="container">
+      <div class="sec-head reveal"><h2>자주 묻는 질문</h2></div>
+      <div class="faq reveal">
+        <details><summary>정말 무료인가요?</summary><p>네, 무료예요. MIT 라이선스로 공개한 오픈소스라서 누구나 쓸 수 있고, GitHub에서 코드도 볼 수 있어요.</p></details>
+        <details><summary>윈도우용 구라제거기의 공식 맥 버전인가요?</summary><p>아니에요. 원작자(BLUEnLIVE)와 관계없는 별도 프로그램이에요. 윈도우용 구라제거기에서 아이디어와 화면 구성을 얻었어요.</p></details>
+        <details><summary>처음 열 때 "열 수 없음" 경고가 나와요.</summary><p>아직 Apple 공증을 받지 않아서 그래요. 경고 창에서 [완료]를 누르고, 시스템 설정 &gt; 개인정보 보호 및 보안에서 [그래도 열기]를 눌러요. 앱을 다시 열고 [그래도 열기]를 누른 뒤 맥 로그인 암호를 입력하면 돼요. 다음부터는 바로 열려요.</p></details>
+        <details><summary>지우고 나면 은행 사이트를 못 쓰나요?</summary><p>사이트에 다시 들어가면 보안 프로그램을 설치하라고 안내해요. 그때 설치해서 쓰고, 볼일을 마치면 다시 정리하면 돼요.</p></details>
+        <details><summary>관리자 암호는 왜 물어보나요?</summary><p>맥 전체에 설치된 항목은 관리자 권한이 있어야 옮길 수 있어요. 암호를 묻기 전에 실행할 명령을 모두 보여 드리고, 암호 창에서 취소하면 아무것도 바뀌지 않아요.</p></details>
+        <details><summary>공동인증서도 지워지나요?</summary><p>아니요. 공동인증서(NPKI) 폴더와 키체인의 다른 인증서는 건드리지 않아요. 지우는 인증서는 보안 프로그램 업체가 설치하면서 넣어 둔 루트 인증서뿐이에요.</p></details>
+        <details><summary>잘못 지웠어요. 되돌릴 수 있나요?</summary><p>파일은 휴지통으로 옮기기 때문에 휴지통에서 꺼내면 돼요. 업체 루트 인증서와 설치 기록은 휴지통에 들어가지 않지만, 보안 프로그램을 다시 설치하면 다시 생겨요.</p></details>
+        <details><summary>회사 업무에 꼭 필요한 프로그램이 있어요.</summary><p>[업무용 프로그램 관리…]에서 표시해 두세요. '업무용 프로그램은 지우지 않기'를 켜 두면 체크가 빠지고, [모두 제거]를 눌러도 남겨 둬요.</p></details>
+        <details><summary>인터넷에 연결해야 하나요? 내 정보가 어디로 가나요?</summary><p>인터넷을 쓰지 않아요. 맥 안에서만 찾고 정리하고, 어디로도 아무것도 보내지 않아요.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="container">
+      <div class="dl reveal">
+        <img src="icon.png" alt="Hoax Eliminator for Mac 아이콘" width="96" height="96">
+        <h2>지금 바로 정리해 보세요</h2>
+        <p>macOS 13 이상, Apple Silicon과 Intel 맥 모두에서 쓸 수 있어요. zip 파일을 풀고 앱을 응용 프로그램 폴더로 옮기면 돼요.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/bambari0410/hoax-eliminator-for-mac/releases/download/v0.1/Hoax-Eliminator-for-Mac-0.1.zip"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>다운로드 v0.1 (zip, 1.1MB)</a>
+          <a class="btn" href="https://github.com/bambari0410/hoax-eliminator-for-mac/releases/download/v0.1/Hoax-Eliminator-for-Mac-0.1.zip.sha256">체크섬 파일</a>
+        </div>
+        <div class="cmd"><code id="cmd">shasum -a 256 -c Hoax-Eliminator-for-Mac-0.1.zip.sha256</code><button type="button" id="copy">복사</button></div>
+        <p class="small-links">받은 파일과 체크섬 파일을 같은 폴더에 두고 터미널에서 실행해서 "OK"가 나오면 돼요.</p>
+        <p class="steps-title">처음 열 때 "열 수 없음" 경고가 나오면</p>
+        <ol class="steps">
+          <li>경고 창에서 [완료]를 눌러요.</li>
+          <li>시스템 설정 &gt; 개인정보 보호 및 보안에서 [그래도 열기]를 눌러요.</li>
+          <li>앱을 다시 열고 [그래도 열기]를 누른 뒤 맥 로그인 암호를 입력해요.</li>
+        </ol>
+        <p class="small-links"><a href="https://github.com/bambari0410/hoax-eliminator-for-mac/releases">모든 버전 보기</a> · <a href="https://github.com/bambari0410/hoax-eliminator-for-mac">GitHub에서 코드 보기</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <div>
+      <a class="brand" href="#top"><img src="icon.png" alt="" width="30" height="30">Hoax Eliminator for Mac</a>
+      <p>원작자(BLUEnLIVE)가 만든 공식 맥 버전이 아니라, 윈도우용 구라제거기에서 아이디어를 얻은 별도 프로그램이에요. 보안 프로그램 목록의 일부는 hoax-eliminator-mac(MIT)에서 출발했어요.</p>
+    </div>
+    <nav aria-label="바깥 링크">
+      <a href="https://github.com/bambari0410/hoax-eliminator-for-mac">GitHub</a>
+      <a href="https://github.com/bambari0410/hoax-eliminator-for-mac/blob/main/LICENSE">MIT 라이선스</a>
+      <a href="https://teus.me/HoaxEliminator">구라제거기 (Windows)</a>
+      <a href="https://github.com/wonmor/hoax-eliminator-mac">hoax-eliminator-mac</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+document.documentElement.classList.add("js");
+
+// Example data for the app window mock
+const rows = [
+  { name: "AhnLab Safe Transaction (ASTx)", vendor: "AhnLab", sys: true, date: "2025-03-14", on: true, traces: [
+    ["프로그램", "/Applications/AhnLab/ASTx"], ["자동 실행 설정", "/Library/LaunchDaemons/com.ahnlab.astx.plist"],
+    ["루트 인증서", "ASTxRoot2 · 이 회사 인증서를 무조건 믿게 하는 설정이라 지우는 게 좋아요", true], ["설치 기록", "com.ahnlab.astx"]] },
+  { name: "TouchEn nxKey", vendor: "RaonSecure", sys: true, date: "2025-03-14", on: true, traces: [
+    ["프로그램", "/Applications/TouchEn nxKey"], ["브라우저 연결", "/Library/Internet Plug-Ins/npraontouchenex.plugin"],
+    ["지원 파일", "/Library/Application Support/raonsecure"], ["설치 기록", "com.raonsecure.touchenex"]] },
+  { name: "Veraport", vendor: "Wizvera", sys: true, date: "2024-11-02", on: true, traces: [
+    ["프로그램", "/Applications/Veraport"], ["브라우저 연결", "/Library/Internet Plug-Ins/Veraport.plugin"],
+    ["루트 인증서", "VERAPORT · 이 회사 인증서를 무조건 믿게 하는 설정이라 지우는 게 좋아요", true], ["설치 기록", "com.wizvera.veraport"]] },
+  { name: "IPinside LWS Agent", vendor: "Interezen", sys: true, date: "2024-11-02", on: true, traces: [
+    ["프로그램", "/Applications/IPinside.app"], ["자동 실행 설정", "/Library/LaunchAgents/com.interezen.lws.plist"],
+    ["루트 인증서", "INTEREZEN CA · 이 회사 인증서를 무조건 믿게 하는 설정이라 지우는 게 좋아요", true]] },
+  { name: "AnySign4PC", vendor: "SoftForum (Hancom Secure)", sys: false, date: "2024-09-30", on: true, traces: [
+    ["지원 파일", "~/Library/Application Support/SoftForum"], ["설정 파일", "~/Library/Preferences/com.softforum.anysign.plist"]] },
+  { name: "MagicLine4NX", vendor: "DreamSecurity", sys: true, date: "2024-06-21", on: false, work: true, traces: [
+    ["프로그램", "/Applications/MagicLine4NX"], ["루트 인증서", "Dreamsecurity ROOT CA · 업무용으로 표시해서 남겨 둬요"]] },
+];
+let selected = 2;
+const $rows = document.getElementById("rows"), $detail = document.getElementById("detail");
+const $all = document.getElementById("all"), $count = document.getElementById("count");
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+function render() {
+  $rows.innerHTML = rows.map((r, i) => `
+    <div class="tr${i === selected ? " sel" : ""}" data-i="${i}" tabindex="0" role="button" aria-pressed="${i === selected}">
+      <span class="prog"><label class="check"><input type="checkbox" data-i="${i}" ${r.on ? "checked" : ""} ${r.work ? "disabled" : ""} aria-label="${esc(r.name)} 선택"></label>
+        <span class="name"><span>${esc(r.name)}</span><span class="vendor">${esc(r.vendor)}</span></span>${r.work ? '<span class="badge work">업무용</span>' : ""}</span>
+      <span><span class="badge ${r.sys ? "sys" : "usr"}">${r.sys ? "시스템" : "사용자"}</span></span>
+      <span class="date">${r.date}</span>
+    </div>`).join("");
+  $detail.innerHTML = rows[selected].traces.map(([k, t, warn]) =>
+    `<div class="trace${warn ? " warn" : ""}"><span>${k}</span><span>${esc(t)}</span></div>`).join("");
+  const removable = rows.filter(r => !r.work);
+  $all.checked = removable.every(r => r.on);
+  $count.textContent = `${rows.filter(r => r.on).length}/${rows.length} 선택 · 검사 대상 17종`;
+}
+$rows.addEventListener("click", e => {
+  const box = e.target.closest("input");
+  if (box) { rows[box.dataset.i].on = box.checked; render(); return; }
+  if (e.target.closest("label")) return;
+  const tr = e.target.closest(".tr");
+  if (tr) { selected = +tr.dataset.i; render(); }
+});
+$rows.addEventListener("keydown", e => {
+  const tr = e.target.closest(".tr");
+  if (tr && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); selected = +tr.dataset.i; render(); $rows.children[selected].focus(); }
+});
+$all.addEventListener("change", () => { rows.forEach(r => { if (!r.work) r.on = $all.checked; }); render(); });
+render();
+
+document.getElementById("copy").addEventListener("click", async e => {
+  try { await navigator.clipboard.writeText(document.getElementById("cmd").textContent); e.target.textContent = "복사했어요"; }
+  catch { e.target.textContent = "직접 복사해 주세요"; }
+  setTimeout(() => (e.target.textContent = "복사"), 1800);
+});
+
+const io = new IntersectionObserver(entries => entries.forEach(en => {
+  if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
+}), { threshold: 0.12 });
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+</script>
+</body>
+</html>

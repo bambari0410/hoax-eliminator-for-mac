@@ -66,17 +66,21 @@ func privilegedPlan(files: [URL], receipts: [String] = [], certs: [SystemCert] =
     return plan
 }
 
-/// Runs the plan behind the macOS administrator prompt. Returns a message for the user.
-func runPrivileged(_ plan: PrivilegedPlan) -> String {
+enum PrivilegedOutcome {
+    case finished(failed: [String])  // what the script reported it could not do
+    case cancelled
+    case error(String)
+}
+
+/// Runs the plan behind the macOS administrator prompt.
+func runPrivileged(_ plan: PrivilegedPlan) -> PrivilegedOutcome {
     let script = plan.steps.map(\.script).joined(separator: "\n")
     let literal = script.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
     var error: NSDictionary?
     let result = NSAppleScript(source: "do shell script \"\(literal)\" with administrator privileges without altering line endings")?
         .executeAndReturnError(&error)
     if let error {
-        return error[NSAppleScript.errorNumber] as? Int == -128 ? "Cancelled." : "Failed: \(error[NSAppleScript.errorMessage] ?? error)"
+        return error[NSAppleScript.errorNumber] as? Int == -128 ? .cancelled : .error("\(error[NSAppleScript.errorMessage] ?? error)")
     }
-    let failed = (result?.stringValue ?? "").split(separator: "\n")
-    return failed.isEmpty ? "Done as administrator. Items are in the Trash (emptying it may ask for the password again)."
-        : failed.joined(separator: "\n")
+    return .finished(failed: (result?.stringValue ?? "").split(separator: "\n").map { $0.replacingOccurrences(of: "failed: ", with: "") })
 }

@@ -437,7 +437,8 @@ struct HelpSheet: View {
                         Para("은행 사이트에 들어가면 설치하라고 다시 안내해요. 그때 설치하고, 볼일을 마치면 다시 정리하면 돼요.")
                     }
                     Text("윈도우용 구라제거기(BLUEnLIVE)에서 아이디어를 얻은 별도 프로그램이에요. 보안 프로그램 목록은 hoax-eliminator-mac(MIT 라이선스)을 바탕으로, 각 제작사의 맥용 설치 파일을 직접 확인해서 고쳤어요.")
-                        .font(.caption).foregroundStyle(.tertiary).padding(.horizontal, 4)
+                        .font(.headline.weight(.regular)).foregroundStyle(.secondary)  // same size as the card titles
+                        .fixedSize(horizontal: false, vertical: true).padding(.horizontal, 4)
                 }
                 .padding(.trailing, 6)
             }

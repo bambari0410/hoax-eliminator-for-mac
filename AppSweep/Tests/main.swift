@@ -113,4 +113,15 @@ assert(shown == [
 ], shown.joined(separator: "\n"))
 assert(!rootPlan.steps.map(\.script).joined().contains("rm -rf /") && !rootPlan.steps.map(\.script).joined().contains("/etc/hosts"))
 
+// cleanup plan: nested paths collapse to the parent, the user's own files skip the admin run, options drop receipts/certs
+try touch(["clean/a/x", "clean/b"])
+let (ca, cax, cb) = (tmp.appending(path: "clean/a"), tmp.appending(path: "clean/a/x"), tmp.appending(path: "clean/b"))
+let pemCert = SystemCert(label: "X", issuer: "", sha1: String(repeating: "B", count: 40), pem: "-----BEGIN CERTIFICATE-----\nQUJD\n-----END CERTIFICATE-----\n")
+let hitA = SecurityHit(product: securityCatalog[0], files: [ca, cax], receipts: ["com.ahnlab.astxd.pkg"], certs: [])
+let hitB = SecurityHit(product: securityCatalog[1], files: [cax, cb], receipts: [], certs: [pemCert])
+let mine = makeCleanup([hitA, hitB], certs: false, receipts: false)
+assert(mine.userFiles.map(\.lastPathComponent) == ["a", "b"] && mine.plan.isEmpty && mine.fileCount == 2, "\(mine.userFiles)")
+let everything = makeCleanup([hitA, hitB], certs: true, receipts: true)
+assert(everything.receiptCount == 1 && everything.certCount == 1 && everything.plan.steps.count == 2)
+
 print("ok: \(found.count) related files, \(unrelated.count) unrelated ignored")

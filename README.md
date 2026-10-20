@@ -72,18 +72,17 @@ ActiveX나 키보드 보안 드라이버처럼 윈도우에만 있는 것은 맥
 
 ## 설치
 
-1. [Releases](../../releases)에서 `Hoax-Eliminator-for-Mac-<버전>.zip`과 `.sha256` 파일을 받아요.
-2. 체크섬을 확인해요. 터미널에서 다음을 실행해서 `OK`가 나오면 돼요.
+1. [Releases](../../releases)에서 `Hoax-Eliminator-for-Mac-<버전>.zip`을 받아요.
+2. 압축을 풀고 `Hoax Eliminator for Mac.app`을 응용 프로그램 폴더로 옮겨요.
+3. 터미널에서 다음 명령을 한 번 실행해요.
    ```sh
-   shasum -a 256 -c Hoax-Eliminator-for-Mac-*.zip.sha256
+   xattr -dr com.apple.quarantine "/Applications/Hoax Eliminator for Mac.app"
    ```
-3. 압축을 풀고 `Hoax Eliminator for Mac.app`을 응용 프로그램 폴더로 옮겨요.
+4. 앱을 열어요.
 
-이 앱은 Apple 공증을 받지 않은 빌드라서, 처음 한 번은 macOS가 실행을 막아요.
+이 앱은 Apple 공증을 받지 않은 빌드라서, 그냥 열면 macOS가 "열 수 없음" 경고를 띄워요. 3번 명령은 인터넷에서 받은 파일에 붙는 격리 표시(`com.apple.quarantine`)를 지워서 이 경고 없이 열리게 해요.
 
-1. 경고 창에서 [완료]를 눌러요.
-2. 시스템 설정 > 개인정보 보호 및 보안에서 [그래도 열기]를 눌러요.
-3. 앱을 다시 열고 [그래도 열기]를 누른 뒤 맥 로그인 암호를 입력해요.
+터미널을 쓰기 싫다면 앱을 한 번 연 뒤 경고 창에서 [완료]를 누르고, 시스템 설정 > 개인정보 보호 및 보안에서 [그래도 열기]를 눌러요. 앱을 다시 열고 [그래도 열기]를 누른 뒤 맥 로그인 암호를 입력하면 돼요.
 
 macOS 13 이상에서 쓸 수 있고, Apple Silicon과 Intel 맥을 모두 지원해요.
 
@@ -95,7 +94,7 @@ Xcode 명령줄 도구가 필요해요.
 cd HoaxEliminatorForMac
 ./build.sh            # .build/Hoax Eliminator for Mac.app (이 맥의 아키텍처)
 ./build.sh test       # 자체 점검: 프로젝트 안의 가짜 파일 구조로 확인해요
-./build.sh package    # ../dist/ 에 universal zip과 .sha256 생성
+./build.sh package    # ../dist/ 에 universal zip 생성
 ```
 
 `./build.sh test --e2e`는 실제 `~/Library`에 테스트용 파일을 만들었다가 지우는 테스트예요. 자세한 내용은 `HoaxEliminatorForMac/Tests/E2E.swift`를 보세요.

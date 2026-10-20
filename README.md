@@ -2,7 +2,9 @@
 
 은행이나 관공서 사이트에서 깔라고 했던 보안 프로그램을 찾아서 한 번에 정리하는 맥용 앱이에요.
 
-윈도우용 [구라제거기](https://teus.me/hoaxeliminator/)에서 아이디어를 얻은 별도 프로그램이에요. 원작자(BLUEnLIVE)가 만든 공식 맥 버전이 아니에요.
+윈도우용 [구라제거기](https://teus.me/HoaxEliminator)에서 아이디어를 얻은 별도 프로그램이에요. 원작자(BLUEnLIVE)가 만든 공식 맥 버전이 아니에요.
+
+소개 페이지: https://bambari0410.github.io/hoax-eliminator-for-mac/
 
 ## 할 수 있는 일
 

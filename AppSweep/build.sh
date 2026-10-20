@@ -13,8 +13,13 @@ if [ "$1" = test ]; then
 fi
 
 APP=".build/Hoax Eliminator for Mac.app"
-mkdir -p "$APP/Contents/MacOS"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp Info.plist "$APP/Contents/"
+# Icon is drawn by Tools/icon.swift; redrawn only when the script changes.
+if [ Tools/icon.swift -nt .build/AppIcon.icns ]; then
+  swift Tools/icon.swift .build/AppIcon.iconset && iconutil -c icns .build/AppIcon.iconset -o .build/AppIcon.icns
+fi
+cp .build/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 swiftc -O -parse-as-library Sources/*.swift -o "$APP/Contents/MacOS/HoaxEliminatorForMac"
 codesign -s - --force "$APP"
 echo "$APP"

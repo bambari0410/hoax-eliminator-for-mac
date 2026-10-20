@@ -114,12 +114,85 @@ func scanSecurity(root: String = "", home: String = NSHomeDirectory(), receipts:
                   certs: [SystemCert] = systemCerts()) -> [SecurityHit] {
     let launchdDirs = [root + "/Library/LaunchDaemons", root + "/Library/LaunchAgents", home + "/Library/LaunchAgents"]
     return securityCatalog.compactMap { p in
-        let files = p.paths.flatMap { expand($0.hasPrefix("~") ? home + $0.dropFirst() : root + $0) }
+        var files = p.paths.flatMap { expand($0.hasPrefix("~") ? home + $0.dropFirst() : root + $0) }
             + p.launchd.flatMap { glob in launchdDirs.flatMap { expand($0 + "/" + glob + ".plist") } }
+        files += appLeftovers(in: files)
         let pkgs = receipts.filter { r in p.receipts.contains { r.hasIPrefix($0) } }
         let roots = certs.filter { c in p.certs.contains { c.label.containsI($0) || c.issuer.containsI($0) } }
         return files.isEmpty && pkgs.isEmpty && roots.isEmpty ? nil : SecurityHit(product: p, files: files, receipts: pkgs, certs: roots)
     }
+}
+
+// relatedFiles() applied to each app the product left behind: its preferences, caches, saved state,
+// containers and launch jobs. Matched by bundle id only (isSubBundle), so generic names like "Uninstaller.app"
+// never pull in other vendors' files.
+func appLeftovers(in found: [URL]) -> [URL] {
+    let apps = found.flatMap { url in
+        url.pathExtension == "app" ? [url]
+            : ((try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)) ?? []).filter { $0.pathExtension == "app" }
+    }
+    let known = Set(found.map(\.path))
+    return apps.compactMap { AppTarget(url: $0, isSubBundle: true) }
+        .filter { !($0.bundleID ?? "com.apple.").hasIPrefix("com.apple.") }
+        .flatMap { $0.relatedFiles().filter(\.selected).map(\.url) }
+        .filter { u in !known.contains(u.path) && !known.contains { u.path.hasPrefix($0 + "/") } }
+}
+
+// "Also find hidden ones not in the list": vendor keywords in the usual install folders. Report only, starts unchecked.
+let hiddenKeywords = "ahnlab|astx|raon|touchen|nxkey|wizvera|veraport|delfino|initech|inisafe|iniline|crossweb|crossex|crosswarp|interezen|"
+    + "ipinside|softforum|anysign|xecure|nprotect|inca\\.|dreamsecurity|magicline|markany|epagesafer|masafer|ksign|crosscert|unisign|"
+    + "yettie|vestcert|secukit|sgasol|kica|signgate|moasign|ubikey|hancomwith|securekey|keysharp|nppfs|ezpdf"
+
+func hiddenSuspects(excluding known: [URL], home: String = NSHomeDirectory()) -> [URL] {
+    let dirs = ["/Library/LaunchDaemons", "/Library/LaunchAgents", home + "/Library/LaunchAgents", "/Applications",
+                "/Library/Application Support", "/Library/Internet Plug-Ins", "/Library/PrivilegedHelperTools"]
+    let paths = known.map(\.path)
+    return dirs.flatMap { dir in
+        ((try? FileManager.default.contentsOfDirectory(atPath: dir)) ?? [])
+            .filter { $0.range(of: hiddenKeywords, options: [.regularExpression, .caseInsensitive]) != nil }
+            .map { URL(filePath: dir).appending(path: $0) }
+    }
+    .filter { u in !paths.contains { u.path == $0 || u.path.hasPrefix($0 + "/") || $0.hasPrefix(u.path + "/") } }
+}
+
+// The "설치일" column: the receipt's install time, else when the files were put in place.
+// Creation dates are useless here: installers keep the vendor's build date (IPinside shows 2018).
+func installDate(of hit: SecurityHit) -> Date? {
+    let receipts = hit.receipts.compactMap { id in
+        output("/usr/sbin/pkgutil", "--pkg-info", id).split(separator: "\n").first { $0.hasPrefix("install-time: ") }
+            .flatMap { TimeInterval($0.dropFirst(14)) }.map { Date(timeIntervalSince1970: $0) }
+    }
+    return receipts.min() ?? hit.files.compactMap { try? $0.resourceValues(forKeys: [.addedToDirectoryDateKey]).addedToDirectoryDate }.min()
+}
+
+// What one press of "제거" will do: files the user can move, and everything else in one administrator run.
+struct Cleanup: Identifiable {
+    let id = UUID()
+    let names: [String]
+    var userFiles: [URL] = []
+    var plan = PrivilegedPlan()
+    var fileCount = 0, jobCount = 0, certCount = 0, receiptCount = 0
+}
+
+func makeCleanup(_ hits: [SecurityHit], certs: Bool, receipts: Bool, uid: uid_t = getuid()) -> Cleanup {
+    var seen = Set<String>()
+    let all = hits.flatMap(\.files).filter { !isSIPRestricted($0) && seen.insert($0.path).inserted }
+    let top = all.filter { u in !seen.contains { u.path.hasPrefix($0 + "/") } }  // nxKey sits inside CrossEX's folder
+    let root = top.filter { needsAdmin($0, uid: uid) }
+    var c = Cleanup(names: hits.map(\.product.name), userFiles: top.filter { !needsAdmin($0, uid: uid) })
+    c.plan = privilegedPlan(files: root, receipts: receipts ? hits.flatMap(\.receipts) : [], certs: certs ? hits.flatMap(\.certs) : [], uid: uid)
+    c.fileCount = c.userFiles.count + root.count - c.plan.skipped.count
+    c.jobCount = top.filter { $0.path.contains("/LaunchDaemons/") || $0.path.contains("/LaunchAgents/") }.count
+    c.certCount = certs ? hits.flatMap(\.certs).count : 0
+    c.receiptCount = receipts ? hits.flatMap(\.receipts).count : 0
+    return c
+}
+
+// Owned by someone else, or sitting in a folder the user cannot write to.
+func needsAdmin(_ url: URL, uid: uid_t = getuid()) -> Bool {
+    var s = stat()
+    guard lstat(url.path, &s) == 0 else { return false }
+    return s.st_uid != uid || access(url.deletingLastPathComponent().path, W_OK) != 0
 }
 
 // Existing paths for one pattern. Dangling symlinks count (a launchd plist often links into a deleted app).

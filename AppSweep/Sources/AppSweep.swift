@@ -3,9 +3,9 @@ import SwiftUI
 // Layout follows HoaxEliminator (구라제거기) for Windows: select-all line, program table, options, four buttons, status bar.
 
 @main
-struct AppSweep: App {
+struct HoaxEliminatorForMac: App {
     var body: some Scene {
-        WindowGroup("AppSweep · 맥용 보안 프로그램 제거기") {
+        WindowGroup("Hoax Eliminator for Mac") {
             MainView().frame(minWidth: 760, minHeight: 660)
         }
     }
@@ -398,7 +398,7 @@ struct HelpSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
-                Text("맥용 보안 프로그램 제거기").font(.title2.bold())
+                Text("Hoax Eliminator for Mac").font(.title2.bold())
                 Text("은행이나 관공서 사이트에서 깔라고 했던 보안 프로그램을 찾아서 한 번에 정리해요.").foregroundStyle(.secondary)
             }
             ScrollView {
@@ -436,7 +436,7 @@ struct HelpSheet: View {
                     Card(title: "다시 필요해지면", icon: "arrow.clockwise.circle.fill", tint: .orange) {
                         Para("은행 사이트에 들어가면 설치하라고 다시 안내해요. 그때 설치하고, 볼일을 마치면 다시 정리하면 돼요.")
                     }
-                    Text("윈도우용 구라제거기(BLUEnLIVE)에서 아이디어를 얻은 별도 프로그램이에요. 보안 프로그램 목록은 hoax-eliminator-mac(MIT 라이선스)을 바탕으로, 각 제작사의 맥용 설치 파일을 직접 확인해서 고쳤어요.")
+                    Text("원작자(BLUEnLIVE)가 만든 공식 맥 버전이 아니라, 윈도우용 구라제거기에서 아이디어를 얻은 별도 프로그램이에요. 보안 프로그램 목록은 hoax-eliminator-mac(MIT 라이선스)을 바탕으로, 각 제작사의 맥용 설치 파일을 직접 확인해서 고쳤어요.")
                         .font(.headline.weight(.regular)).foregroundStyle(.secondary)  // same size as the card titles
                         .fixedSize(horizontal: false, vertical: true).padding(.horizontal, 4)
                 }

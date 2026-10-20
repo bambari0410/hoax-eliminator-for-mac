@@ -1,5 +1,5 @@
 #!/bin/sh
-# ./build.sh       -> .build/AppSweep.app
+# ./build.sh       -> ".build/Hoax Eliminator for Mac.app"
 # ./build.sh test  -> run the matching self-check (fake filesystem, nothing real is touched)
 # ./build.sh test --e2e | --plant | --verify | --clean  -> real ~/Library test with a dummy app, see Tests/E2E.swift
 set -e
@@ -12,9 +12,9 @@ if [ "$1" = test ]; then
   exec .build/check "$@"
 fi
 
-APP=.build/AppSweep.app
+APP=".build/Hoax Eliminator for Mac.app"
 mkdir -p "$APP/Contents/MacOS"
 cp Info.plist "$APP/Contents/"
-swiftc -O -parse-as-library Sources/*.swift -o "$APP/Contents/MacOS/AppSweep"
+swiftc -O -parse-as-library Sources/*.swift -o "$APP/Contents/MacOS/HoaxEliminatorForMac"
 codesign -s - --force "$APP"
 echo "$APP"

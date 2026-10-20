@@ -2,12 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDisplayName</key>
+	<string>Hoax Eliminator for Mac</string>
 	<key>CFBundleExecutable</key>
-	<string>AppSweep</string>
+	<string>HoaxEliminatorForMac</string>
 	<key>CFBundleIdentifier</key>
-	<string>local.AppSweep</string>
+	<string>local.HoaxEliminatorForMac</string>
 	<key>CFBundleName</key>
-	<string>AppSweep</string>
+	<string>Hoax Eliminator for Mac</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

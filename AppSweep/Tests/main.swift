@@ -19,7 +19,7 @@ if CommandLine.arguments.count > 1, let app = AppTarget(url: URL(filePath: Comma
 }
 
 let tag = "appsweep-check-\(UUID().uuidString)"
-let tmp = FileManager.default.temporaryDirectory.appending(path: tag)
+let tmp = URL(filePath: FileManager.default.currentDirectoryPath).appending(path: ".build/\(tag)")  // stays inside the project
 defer { try? FileManager.default.removeItem(at: tmp) }
 let roots = Roots(libraries: [tmp.appending(path: "home/Library"), tmp.appending(path: "sys/Library")],
                   receipts: tmp.appending(path: "receipts"), shared: tmp.appending(path: "Shared"))

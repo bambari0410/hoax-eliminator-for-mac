@@ -18,7 +18,7 @@ if CommandLine.arguments.count > 1, let app = AppTarget(url: URL(filePath: Comma
     exit(0)
 }
 
-let tag = "appsweep-check-\(UUID().uuidString)"
+let tag = "hoax-eliminator-check-\(UUID().uuidString)"
 let tmp = URL(filePath: FileManager.default.currentDirectoryPath).appending(path: ".build/\(tag)")  // stays inside the project
 defer { try? FileManager.default.removeItem(at: tmp) }
 let roots = Roots(libraries: [tmp.appending(path: "home/Library"), tmp.appending(path: "sys/Library")],

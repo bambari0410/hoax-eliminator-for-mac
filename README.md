@@ -72,17 +72,18 @@ ActiveX나 키보드 보안 드라이버처럼 윈도우에만 있는 것은 맥
 
 ## 설치
 
-1. [Releases](../../releases)에서 `Hoax-Eliminator-for-Mac-<버전>.zip`을 받아요.
-2. 압축을 풀고 `Hoax Eliminator for Mac.app`을 응용 프로그램 폴더로 옮겨요.
-3. 터미널에서 다음 명령을 한 번 실행해요.
-   ```sh
-   xattr -dr com.apple.quarantine "/Applications/Hoax Eliminator for Mac.app"
-   ```
-4. 앱을 열어요.
+터미널에 다음 한 줄을 붙여 넣어요. 최신 버전을 받아서 응용 프로그램 폴더에 넣고 바로 열어 줘요. 새 버전이 나왔을 때도 같은 명령을 다시 실행하면 돼요.
 
-이 앱은 Apple 공증을 받지 않은 빌드라서, 그냥 열면 macOS가 "열 수 없음" 경고를 띄워요. 3번 명령은 인터넷에서 받은 파일에 붙는 격리 표시(`com.apple.quarantine`)를 지워서 이 경고 없이 열리게 해요.
+```sh
+curl -fsSL https://bambari0410.github.io/hoax-eliminator-for-mac/install.sh | sh
+```
 
-터미널을 쓰기 싫다면 앱을 한 번 연 뒤 경고 창에서 [완료]를 누르고, 시스템 설정 > 개인정보 보호 및 보안에서 [그래도 열기]를 눌러요. 앱을 다시 열고 [그래도 열기]를 누른 뒤 맥 로그인 암호를 입력하면 돼요.
+이 앱은 Apple 공증을 받지 않은 빌드예요. 브라우저로 받은 파일에는 macOS가 격리 표시(`com.apple.quarantine`)를 붙여서 "열 수 없음" 경고를 띄우지만, `curl`로 받은 파일에는 이 표시가 붙지 않아서 바로 열려요. 스크립트 내용은 [docs/install.sh](docs/install.sh)에서 볼 수 있어요. 응용 프로그램 폴더에 쓸 권한이 없는 계정이면 `~/Applications`에 설치해요.
+
+### zip으로 설치하기
+
+1. [Releases](../../releases)에서 `Hoax-Eliminator-for-Mac-<버전>.zip`을 받아서 풀고, `Hoax Eliminator for Mac.app`을 응용 프로그램 폴더로 옮겨요.
+2. 터미널에서 `xattr -dr com.apple.quarantine "/Applications/Hoax Eliminator for Mac.app"`을 한 번 실행해요. 터미널을 쓰기 싫다면 앱을 한 번 연 뒤 시스템 설정 > 개인정보 보호 및 보안에서 [그래도 열기]를 누르고, 앱을 다시 열어 맥 로그인 암호를 입력해요.
 
 macOS 13 이상에서 쓸 수 있고, Apple Silicon과 Intel 맥을 모두 지원해요.
 

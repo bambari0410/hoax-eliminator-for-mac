@@ -223,7 +223,14 @@ section { padding: 96px 0; }
 .dl h2 { margin: 0 0 10px; font-size: clamp(30px, 4vw, 44px); letter-spacing: -0.03em; line-height: 1.2; }
 .dl > p { margin: 0 auto 28px; color: var(--muted); max-width: 520px; }
 .dl .cta { justify-content: center; }
-.cmd { margin: 28px auto 0; max-width: 560px; display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 18px; border-radius: 14px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); text-align: left; }
+.manual { margin: 26px auto 0; max-width: 640px; }
+.manual summary { cursor: pointer; list-style: none; color: var(--blue-soft); font-weight: 600; font-size: 15px; }
+.manual summary::-webkit-details-marker { display: none; }
+.manual summary::after { content: " ↓"; }
+.manual[open] summary::after { content: " ↑"; }
+.manual .cta { margin-top: 18px; }
+.manual .steps { margin-top: 18px; }
+.cmd { margin: 28px auto 0; max-width: 680px; display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 18px; border-radius: 14px; background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line); text-align: left; }
 .cmd code { flex: 1; font-size: 13.5px; color: #c5d0ff; overflow-x: auto; white-space: nowrap; }
 .cmd button { flex: none; height: 32px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
 .steps { margin: 28px auto 0; max-width: 640px; text-align: left; display: grid; gap: 10px; counter-reset: s; padding: 0; }
@@ -463,7 +470,7 @@ footer p { margin: 8px 0 0; max-width: 520px; }
           <div><dt>검사 대상</dt><dd>보안 프로그램 28종, 업체 루트 인증서, 설치 기록</dd></div>
           <div><dt>지우는 방식</dt><dd>휴지통으로 이동 (바로 삭제하지 않아요)</dd></div>
           <div><dt>인터넷</dt><dd>쓰지 않아요 (아무것도 보내지 않아요)</dd></div>
-          <div><dt>서명</dt><dd>Apple 공증 전이라, 처음 한 번 명령 한 줄로 허용해요</dd></div>
+          <div><dt>서명</dt><dd>Apple 공증 전 (설치 명령으로 설치하면 경고 없이 열려요)</dd></div>
           <div><dt>언어</dt><dd>한국어</dd></div>
         </dl>
       </div>
@@ -476,7 +483,8 @@ footer p { margin: 8px 0 0; max-width: 520px; }
       <div class="faq reveal">
         <details><summary>정말 무료인가요?</summary><p>네, 무료예요. MIT 라이선스로 공개한 오픈소스라서 누구나 쓸 수 있고, GitHub에서 코드도 볼 수 있어요.</p></details>
         <details><summary>맥에서도 구라제거기를 쓸 수 있나요?</summary><p>윈도우용 구라제거기는 맥에서 실행되지 않아요. Hoax Eliminator for Mac은 구라제거기에서 아이디어와 화면 구성을 얻어 맥용으로 따로 만든 무료 프로그램이에요. 원작자(BLUEnLIVE)와 관계없는 별도 프로그램이고, 공식 맥 버전은 아니에요.</p></details>
-        <details><summary>처음 열 때 "열 수 없음" 경고가 나와요.</summary><p>아직 Apple 공증을 받지 않아서 그래요. 앱을 응용 프로그램 폴더로 옮긴 뒤, 터미널에서 <code>xattr -dr com.apple.quarantine "/Applications/Hoax Eliminator for Mac.app"</code>을 한 번 실행하면 바로 열려요. 터미널이 낯설다면 시스템 설정 &gt; 개인정보 보호 및 보안에서 [그래도 열기]를 누르고, 앱을 다시 열어 맥 로그인 암호를 입력해도 돼요.</p></details>
+        <details><summary>처음 열 때 "열 수 없음" 경고가 나와요.</summary><p>zip을 받아서 설치하면 아직 Apple 공증을 받지 않아서 이 경고가 나와요. 아래 다운로드 영역의 설치 명령으로 설치하면 경고 없이 바로 열려요. 이미 zip으로 설치했다면 터미널에서 <code>xattr -dr com.apple.quarantine "/Applications/Hoax Eliminator for Mac.app"</code>을 한 번 실행하거나, 시스템 설정 &gt; 개인정보 보호 및 보안에서 [그래도 열기]를 눌러요.</p></details>
+        <details><summary>새 버전은 어떻게 받나요?</summary><p>설치할 때 쓴 명령을 다시 실행하면 최신 버전으로 바꿔 줘요. 앱이 열려 있으면 먼저 닫고 새 버전을 열어요.</p></details>
         <details><summary>지우고 나면 은행 사이트를 못 쓰나요?</summary><p>사이트에 다시 들어가면 보안 프로그램을 설치하라고 안내해요. 그때 설치해서 쓰고, 볼일을 마치면 다시 정리하면 돼요.</p></details>
         <details><summary>관리자 암호는 왜 물어보나요?</summary><p>맥 전체에 설치된 항목은 관리자 권한이 있어야 옮길 수 있어요. 암호를 묻기 전에 실행할 명령을 모두 보여 드리고, 암호 창에서 취소하면 아무것도 바뀌지 않아요.</p></details>
         <details><summary>공동인증서도 지워지나요?</summary><p>아니요. 공동인증서(NPKI) 폴더와 키체인의 다른 인증서는 건드리지 않아요. 지우는 인증서는 보안 프로그램 업체가 설치하면서 넣어 둔 루트 인증서뿐이에요.</p></details>
@@ -492,18 +500,21 @@ footer p { margin: 8px 0 0; max-width: 520px; }
       <div class="dl reveal">
         <img src="icon.png" alt="Hoax Eliminator for Mac 아이콘" width="96" height="96">
         <h2>지금 바로 정리해 보세요</h2>
-        <p>macOS 13 이상, Apple Silicon과 Intel 맥 모두에서 쓸 수 있어요.</p>
-        <div class="cta">
-          <a class="btn primary" href="https://github.com/bambari0410/hoax-eliminator-for-mac/releases/download/v0.2/Hoax-Eliminator-for-Mac-0.2.zip"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>다운로드 v0.2 (zip, 1.1MB)</a>
-        </div>
-        <p class="steps-title">설치하고 바로 열기</p>
-        <ol class="steps">
-          <li>zip 파일을 풀고 앱을 응용 프로그램 폴더로 옮겨요.</li>
-          <li>터미널을 열고 아래 명령을 붙여 넣은 뒤 return 키를 눌러요.</li>
-          <li>앱을 열면 "열 수 없음" 경고 없이 바로 열려요.</li>
-        </ol>
-        <div class="cmd"><code id="cmd">xattr -dr com.apple.quarantine "/Applications/Hoax Eliminator for Mac.app"</code><button type="button" id="copy">복사</button></div>
-        <p class="small-links">아직 Apple 공증을 받지 않아서, 인터넷에서 받은 파일에 붙는 격리 표시를 지워 주는 명령이에요. 터미널이 낯설다면 앱을 한 번 연 뒤 시스템 설정 &gt; 개인정보 보호 및 보안에서 [그래도 열기]를 눌러도 돼요.</p>
+        <p>터미널에 아래 한 줄을 붙여 넣으면, 최신 버전을 받아서 응용 프로그램 폴더에 넣고 바로 열어 줘요.</p>
+        <div class="cmd"><code id="cmd">curl -fsSL https://bambari0410.github.io/hoax-eliminator-for-mac/install.sh | sh</code><button type="button" id="copy">복사</button></div>
+        <p class="small-links">터미널은 Spotlight(⌘ + Space)에서 "터미널"을 검색하면 열려요. 이렇게 설치하면 "열 수 없음" 경고 없이 바로 열리고, 새 버전이 나오면 같은 명령으로 바꿀 수 있어요. <a href="install.sh">설치 스크립트 보기</a></p>
+        <p class="small-links">macOS 13 이상, Apple Silicon과 Intel 맥 모두에서 쓸 수 있어요.</p>
+        <details class="manual">
+          <summary>터미널 없이 zip으로 설치하기</summary>
+          <div class="cta">
+            <a class="btn" href="https://github.com/bambari0410/hoax-eliminator-for-mac/releases/download/v0.2/Hoax-Eliminator-for-Mac-0.2.zip"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 21h14"/></svg>zip 받기 v0.2 (1.1MB)</a>
+          </div>
+          <ol class="steps">
+            <li>zip 파일을 풀고 앱을 응용 프로그램 폴더로 옮겨요.</li>
+            <li>앱을 열고, "열 수 없음" 경고 창에서 [완료]를 눌러요. 아직 Apple 공증을 받지 않아서 나오는 경고예요.</li>
+            <li>시스템 설정 &gt; 개인정보 보호 및 보안에서 [그래도 열기]를 누르고, 앱을 다시 열어 맥 로그인 암호를 입력해요.</li>
+          </ol>
+        </details>
         <p class="small-links"><a href="https://github.com/bambari0410/hoax-eliminator-for-mac/releases">모든 버전 보기</a> · <a href="https://github.com/bambari0410/hoax-eliminator-for-mac">GitHub에서 코드 보기</a></p>
       </div>
     </div>

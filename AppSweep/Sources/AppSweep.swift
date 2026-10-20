@@ -402,32 +402,44 @@ struct HelpSheet: View {
                 Text("은행이나 관공서 사이트에서 깔라고 했던 보안 프로그램을 찾아서 한 번에 정리해요.").foregroundStyle(.secondary)
             }
             ScrollView {
-                VStack(alignment: .leading, spacing: 18) {
-                    Section(title: "윈도우판과 이렇게 달라요") {
-                        Para("윈도우의 구라제거기는 '프로그램 추가/제거' 목록에서 보안 프로그램을 찾고, 제작사 제거 프로그램을 차례로 실행해요. 맥에는 그런 목록이 없어서, 프로그램이 설치하면서 남긴 흔적을 하나하나 직접 찾아요.")
-                        Para("그래서 찾는 대상도 달라요.")
-                        Item(name: "프로그램", text: "응용 프로그램 폴더에 있는 앱과 폴더")
-                        Item(name: "자동 실행 설정", text: "맥을 켤 때마다 뒤에서 돌던 항목이에요. 윈도우의 '서비스'와 비슷해요.")
-                        Item(name: "브라우저 연결", text: "크롬이나 파이어폭스가 보안 프로그램과 통신하게 해 주는 파일")
-                        Item(name: "루트 인증서", text: "이 회사가 만든 인증서를 무조건 믿게 하는 설정이에요. 제작사 제거 프로그램으로 지워도 남는 경우가 많아요.")
-                        Item(name: "설치 기록", text: "맥이 기억하고 있는 설치 정보")
-                        Para("ActiveX나 키보드 보안 드라이버처럼 윈도우에만 있는 것은 맥에 없어요. 맥용이 따로 없는 프로그램도 있어서 목록이 윈도우판과 조금 달라요.")
-                        Para("'위치' 열의 시스템/사용자는 윈도우판의 HKLM/HKCU와 비슷해요. 맥 전체에 깔린 것은 지울 때 관리자 암호가 필요해요.")
+                VStack(alignment: .leading, spacing: 14) {
+                    Card(title: "윈도우판과 이렇게 달라요", icon: "arrow.left.arrow.right.circle.fill", tint: .blue) {
+                        Para("윈도우의 구라제거기는 '프로그램 추가/제거' 목록에서 보안 프로그램을 찾아 제작사 제거 프로그램을 차례로 실행해요. 맥에는 그런 목록이 없어서, 설치하면서 남긴 흔적을 하나하나 직접 찾아요.")
+                        Para("그래서 찾는 대상도 달라요.", secondary: true)
+                        Item(icon: "app.dashed", name: "프로그램", text: "응용 프로그램 폴더에 있는 앱과 폴더")
+                        Item(icon: "arrow.triangle.2.circlepath", name: "자동 실행 설정", text: "맥을 켤 때마다 뒤에서 돌던 항목이에요. 윈도우의 '서비스'와 비슷해요.")
+                        Item(icon: "globe", name: "브라우저 연결", text: "크롬이나 파이어폭스가 보안 프로그램과 통신하게 해 주는 파일")
+                        Item(icon: "exclamationmark.shield.fill", name: "루트 인증서",
+                             text: "이 회사가 만든 인증서를 무조건 믿게 하는 설정이에요. 제작사 제거 프로그램으로 지워도 남는 경우가 많아요.", tint: .orange)
+                        Item(icon: "doc.text", name: "설치 기록", text: "맥이 기억하고 있는 설치 정보")
+                        Divider()
+                        Para("ActiveX나 키보드 보안 드라이버처럼 윈도우에만 있는 것은 맥에 없어요. 맥용이 따로 없는 프로그램도 있어서 목록이 윈도우판과 조금 달라요.", secondary: true)
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("표의 '위치'는 윈도우판의 HKLM/HKCU와 비슷해요.").font(.callout)
+                            HStack(spacing: 8) {
+                                Badge(text: "시스템", color: .orange)
+                                Text("맥 전체에 깔렸어요. 지울 때 관리자 암호가 필요해요.").font(.callout).foregroundStyle(.secondary)
+                            }
+                            HStack(spacing: 8) {
+                                Badge(text: "사용자", color: .green)
+                                Text("내 계정에만 있어요.").font(.callout).foregroundStyle(.secondary)
+                            }
+                        }
                     }
-                    Section(title: "이렇게 안전하게 지워요") {
-                        Item(name: "휴지통으로", text: "파일은 바로 지우지 않고 휴지통으로 옮겨요. 잘못 지웠다면 휴지통에서 꺼내면 돼요.")
-                        Item(name: "손대지 않는 곳", text: "공동인증서(NPKI) 폴더, 키체인의 다른 인증서, macOS 시스템 폴더는 건드리지 않아요.")
-                        Item(name: "같이 쓰는 폴더", text: "여러 회사 프로그램이 같이 쓰는 폴더는 비어 있을 때만 정리해요.")
-                        Item(name: "미리 보여 드려요", text: "관리자 암호가 필요한 작업은 실행하기 전에 무엇을 하는지 모두 보여 드려요.")
-                        Item(name: "업무용", text: "회사 업무에 필요한 프로그램은 '업무용'으로 표시해 두면 지우지 않아요.")
+                    Card(title: "이렇게 안전하게 지워요", icon: "checkmark.shield.fill", tint: .green) {
+                        Item(icon: "trash", name: "휴지통으로 옮겨요", text: "바로 지우지 않아요. 잘못 지웠다면 휴지통에서 꺼내면 돼요.", tint: .green)
+                        Item(icon: "lock.shield", name: "손대지 않는 곳", text: "공동인증서(NPKI) 폴더, 키체인의 다른 인증서, macOS 시스템 폴더", tint: .green)
+                        Item(icon: "folder", name: "같이 쓰는 폴더", text: "여러 회사 프로그램이 같이 쓰는 폴더는 비어 있을 때만 정리해요.", tint: .green)
+                        Item(icon: "eye", name: "미리 보여 드려요", text: "관리자 암호가 필요한 작업은 실행하기 전에 무엇을 하는지 모두 보여 드려요.", tint: .green)
+                        Item(icon: "briefcase", name: "업무용은 남겨요", text: "회사 업무에 필요한 프로그램은 '업무용'으로 표시해 두면 지우지 않아요.", tint: .green)
                     }
-                    Section(title: "다시 필요해지면") {
+                    Card(title: "다시 필요해지면", icon: "arrow.clockwise.circle.fill", tint: .orange) {
                         Para("은행 사이트에 들어가면 설치하라고 다시 안내해요. 그때 설치하고, 볼일을 마치면 다시 정리하면 돼요.")
                     }
                     Text("윈도우용 구라제거기(BLUEnLIVE)에서 아이디어를 얻은 별도 프로그램이에요. 보안 프로그램 목록은 hoax-eliminator-mac(MIT 라이선스)을 바탕으로, 각 제작사의 맥용 설치 파일을 직접 확인해서 고쳤어요.")
-                        .font(.caption).foregroundStyle(.secondary)
+                        .font(.caption).foregroundStyle(.tertiary).padding(.horizontal, 4)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.trailing, 6)
             }
             HStack {
                 Spacer()
@@ -435,35 +447,50 @@ struct HelpSheet: View {
             }
         }
         .padding(22)
-        .frame(width: 580, height: 600)
+        .frame(width: 600, height: 640)
     }
 
-    struct Section<Content: View>: View {
+    struct Card<Content: View>: View {
         let title: String
+        let icon: String
+        let tint: Color
         @ViewBuilder let content: Content
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title).font(.headline)
+            VStack(alignment: .leading, spacing: 12) {
+                Label(title, systemImage: icon).font(.headline).foregroundStyle(tint)
                 content
             }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(tint.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+            .overlay(RoundedRectangle(cornerRadius: 12).strokeBorder(tint.opacity(0.25)))
         }
     }
 
     struct Para: View {
         let text: String
-        init(_ text: String) { self.text = text }
-        var body: some View { Text(text).fixedSize(horizontal: false, vertical: true) }
+        var secondary = false
+        init(_ text: String, secondary: Bool = false) { self.text = text; self.secondary = secondary }
+
+        var body: some View {
+            Text(text).font(.callout).foregroundStyle(secondary ? .secondary : .primary).fixedSize(horizontal: false, vertical: true)
+        }
     }
 
     struct Item: View {
+        let icon: String
         let name: String
         let text: String
+        var tint: Color = .blue
 
         var body: some View {
-            HStack(alignment: .firstTextBaseline, spacing: 10) {
-                Text(name).font(.callout.weight(.semibold)).frame(width: 104, alignment: .leading)
-                Text(text).font(.callout).fixedSize(horizontal: false, vertical: true)
+            HStack(alignment: .top, spacing: 10) {
+                Image(systemName: icon).font(.body).foregroundStyle(tint).frame(width: 22)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(name).font(.callout.weight(.semibold))
+                    Text(text).font(.callout).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
     }

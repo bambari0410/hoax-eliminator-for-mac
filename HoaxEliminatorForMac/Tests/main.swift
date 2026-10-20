@@ -83,6 +83,43 @@ assert(hits == ["ipinside": ["Library/LaunchDaemons/com.interezen.nwsdaemon.plis
 assert(sec.first { $0.id == "astx" }?.receipts == ["com.ahnlab.astxd.pkg"])
 assert(sec.first { $0.id == "veraport" }?.certs.map(\.label) == ["127.0.0.1"] && sec.first { $0.id == "ipinside" }?.certs.map(\.label) == ["INTEREZEN CA"])
 
+// vendors with several products: each receipt and folder lands on exactly one entry (ids taken from the installers)
+try touch(["sec2/Applications/raonk/x", "sec2/Library/Application Support/raonsecure/nxwirelesscert/x",
+           "sec2/Library/Application Support/raonsecure/TouchEn nxKey/x", "sec2/Library/Application Support/iniLINE/CrossEX/touchenex/x",
+           "sec2/Library/LaunchDaemons/com.raon.TouchEN_TEWeb_Agent.plist"])
+let dream = SystemCert(label: "Dreamsecurity ROOT CA", issuer: "Dreamsecurity ROOT CA", sha1: String(repeating: "C", count: 40),
+                       pem: "-----BEGIN CERTIFICATE-----\nQUJD\n-----END CERTIFICATE-----\n")
+let vendorReceipts = [
+    "com.raonsecure.pkg.nxkey", "com.raonsecure.KSCertRelayInstaller", "com.raonsecure.TouchEN-TEWeb.pkg.TEWebInstaller",
+    "kr.co.iniline.pkg.CrossEXPackage", "kr.co.iniline.pkg.CrossWebPackage",
+    "com.dreamsecurity.MagicLine4NX", "com.dreamsecurity.NTSFileCryptNP.ntsmagicxmlsecuritynp.NTSMagicXMLSecurityNP.pkg",
+    "com.dreamsecurity.NTSFileCryptNP.ntsfilecryptnp.NTSFileCryptNP.pkg", "com.nprotect.nprotectOnlineSecurityV1.install.pkg",
+    "com.nprotect.nprotectOnlineSecurityV60.nosstt60.pkg", "com.nprotect.nprotectEfds.nplogcollector.pkg", "com.softforum.anysign4pc",
+    "com.softforum.certsharexfree", "com.softforum.xecurewebunifiedclient", "com.mygreatcompany.pkg.kuploadrelease"]
+let sec2 = scanSecurity(root: tmp.appending(path: "sec2").path, home: tmp.appending(path: "sec2/home").path, receipts: vendorReceipts, certs: [dream])
+var owners: [String: [String]] = [:]
+for hit in sec2 { for r in hit.receipts { owners[r, default: []].append(hit.id) } }
+assert(owners.values.allSatisfy { $0.count == 1 }, "\(owners.filter { $0.value.count > 1 })")
+assert(owners.mapValues { $0[0] } == [
+    "com.raonsecure.pkg.nxkey": "nxkey", "com.raonsecure.KSCertRelayInstaller": "kscertrelay",
+    "com.raonsecure.TouchEN-TEWeb.pkg.TEWebInstaller": "nxweb", "kr.co.iniline.pkg.CrossEXPackage": "crossex",
+    "kr.co.iniline.pkg.CrossWebPackage": "crosswebex", "com.dreamsecurity.MagicLine4NX": "magicline",
+    "com.dreamsecurity.NTSFileCryptNP.ntsmagicxmlsecuritynp.NTSMagicXMLSecurityNP.pkg": "ntsmagicxml",
+    "com.dreamsecurity.NTSFileCryptNP.ntsfilecryptnp.NTSFileCryptNP.pkg": "ntsfilecrypt", "com.nprotect.nprotectOnlineSecurityV1.install.pkg": "nprotect",
+    "com.nprotect.nprotectOnlineSecurityV60.nosstt60.pkg": "nprotect", "com.nprotect.nprotectEfds.nplogcollector.pkg": "seculog",
+    "com.softforum.anysign4pc": "anysign", "com.softforum.certsharexfree": "certshare", "com.softforum.xecurewebunifiedclient": "xecureweb",
+    "com.mygreatcompany.pkg.kuploadrelease": "raonk"], "\(owners)")
+let folders = Dictionary(uniqueKeysWithValues: sec2.map { ($0.id, $0.files.map { $0.path.components(separatedBy: "sec2/").last! }) })
+assert(folders["nxkey"] == ["Library/Application Support/raonsecure/TouchEn nxKey"] && folders["raonk"] == ["Applications/raonk"]
+       && folders["kscertrelay"] == ["Library/Application Support/raonsecure/nxwirelesscert"]
+       && folders["crossex"] == ["Library/Application Support/iniLINE/CrossEX/touchenex"]
+       && folders["nxweb"] == ["Library/LaunchDaemons/com.raon.TouchEN_TEWeb_Agent.plist"], "\(folders)")
+// the shared Dreamsecurity root CA shows on all three products but is deleted once
+let trusting = sec2.filter { hit in hit.certs.contains { $0.label == "Dreamsecurity ROOT CA" } }.map(\.id)
+assert(trusting.sorted() == ["magicline", "ntsfilecrypt", "ntsmagicxml"], "\(trusting)")
+let shared = makeCleanup(sec2.filter { ["magicline", "ntsfilecrypt", "ntsmagicxml"].contains($0.id) }, certs: true, receipts: false)
+assert(shared.certCount == 1 && shared.plan.steps.filter { $0.shown.contains("delete-certificate") }.count == 1)
+
 // privileged plan: allowlist, quoting, and nothing but scan results reach root (built only, never run here)
 let tester = "/Users/tester"
 for ok in ["/Library/LaunchDaemons/com.interezen.nwsdaemon.plist", "/Library/Application Support/wizvera/veraport", "/Applications/Veraport",

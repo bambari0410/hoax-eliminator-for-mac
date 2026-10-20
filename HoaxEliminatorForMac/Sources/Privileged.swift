@@ -14,7 +14,8 @@ struct PrivilegedPlan: Identifiable {
 let privilegedRoots = ["/Applications/", "/Library/", "/private/var/db/receipts/", "/Users/Shared/", "/private/tmp/", "/tmp/"]
 // Vendor folders shared by several products: only removed with rmdir once empty, deepest first.
 let sharedVendorDirs = ["/Library/Application Support/iniLINE/CrossEX", "/Library/Application Support/iniLINE", "/Library/Application Support/wizvera",
-                        "/Library/Application Support/AhnLab", "/Applications/AhnLab", "/Applications/CrossEX", "/Applications/kica"]
+                        "/Library/Application Support/AhnLab", "/Applications/AhnLab", "/Applications/CrossEX", "/Applications/kica",
+                        "/Library/Application Support/raonsecure", "/Applications/raonsecure"]
 let neverMoveAsRoot = ["/Applications/Utilities", "/Library/Google", "/Library/Google/Chrome", "/Library/Google/Chrome/NativeMessagingHosts",
                        "/Library/Application Support/Mozilla", "/Library/Application Support/Mozilla/NativeMessagingHosts"] + sharedVendorDirs
 

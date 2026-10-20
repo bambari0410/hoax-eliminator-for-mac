@@ -30,21 +30,34 @@ let securityCatalog: [SecurityProduct] = [
           paths: ["/Applications/AhnLab/ASTx", "/Library/Application Support/AhnLab/ASTx", "~/Library/Application Support/AhnLab/ASTx",
                   "~/Library/Preferences/com.ahnlab.safetransaction*", "~/Library/Preferences/com.astx.*", "/tmp/ahnlab"],
           launchd: ["com.ahnlab.astx*"], receipts: ["com.ahnlab.astx"], certs: ["ASTxRoot2"]),
+    // The installer copies its parts to /Library first and never deletes those copies.
     .init(id: "nxkey", name: "TouchEn nxKey", vendor: "RaonSecure",
-          paths: ["/Applications/TouchEn nxKey", "/Applications/raonk", "/Applications/CrossEX/touchenex", "/Library/Application Support/raonsecure",
-                  "/Library/Application Support/iniLINE/CrossEX/touchenex", "/Library/Internet Plug-Ins/npraontouchenex.plugin", "~/Library/Preferences/com.raon.*"],
-          launchd: ["com.raon.*", "com.raonsecure.*"], receipts: ["com.raonsecure.", "com.raon."]),
+          paths: ["/Applications/TouchEn nxKey", "/Library/Application Support/raonsecure/TouchEn nxKey", "/Library/Extensions/TKVHD.kext",
+                  "/Library/TEK_Daemon", "/Library/TEK_Daemon2", "/Library/TEK_Daemon3", "/Library/TEK_UserAgent.app", "/Library/TKVHD.kext",
+                  "/Library/TKUKMD.kext", "/Library/com.raon.touchen.UserAgent.plist", "/Library/Application Support/iniLINE/CrossEX/touchenex/nxkey.json",
+                  "~/Library/Preferences/com.raon.touchen.nxkey*", "~/Library/Preferences/com.raon.touchen.UserAgent*"],
+          // Globs are case-insensitive: a bare "com.raon.touchen*" would also take nxWeb's com.raon.TouchEN_TEWeb_Agent.
+          launchd: ["com.raon.touchen.nxkey*", "com.raon.agent.touchen.nxkey*", "com.raon.touchen.UserAgent*"],
+          receipts: ["com.raonsecure.pkg.nxkey", "com.raon.touchen.nxkey"]),
     .init(id: "crosswebex", name: "INISAFE CrossWeb EX", vendor: "INITECH",
           paths: ["/Applications/CrossWebEX", "/Library/Application Support/iniLINE/CrossEX/crosswebex", "/Library/Application Support/iniLINE/CrossWebEX",
                   "/Library/Frameworks/CrossWebEXFramework.framework", "/Library/Internet Plug-Ins/npCrossWebEXPlugin.plugin",
                   "/Library/Internet Plug-Ins/npinilinecrosswebex.plugin", "/Library/Google/Chrome/NativeMessagingHosts/kr.co.iniline.crosswebex.json",
                   "/Library/Application Support/Mozilla/NativeMessagingHosts/kr.co.iniline.crosswebex.firefox.json",
-                  "~/Library/Preferences/initech.*", "~/Library/Preferences/com.initech.*", "/tmp/crosswebextmp"],
-          launchd: ["com.initech.*"], receipts: ["kr.co.initech."], certs: ["Initech Root Authority"]),
-    .init(id: "crossex", name: "iniLINE CrossEX / CrossWarpEX", vendor: "iniLINE",
+                  "~/Library/Preferences/initech.*", "~/Library/Preferences/com.initech.*", "/tmp/crosswebextmp",
+                  // the older NPAPI CrossWeb plug-in, packaged by iniLINE
+                  "/Applications/CrossWeb", "/Library/Application Support/iniLINE/CrossWeb", "/Library/Frameworks/CrossWebFramework.framework",
+                  "/Library/Internet Plug-Ins/npCrossWebPlugin.plugin"],
+          launchd: ["com.initech.*"], receipts: ["kr.co.initech.", "kr.co.iniline.pkg.CrossWebPackage"], certs: ["Initech Root Authority"]),
+    // The shared bridge that nxKey, KSCertRelay and nxFirewall install (touchenex, receipt kr.co.iniline.pkg.CrossEXPackage).
+    .init(id: "crossex", name: "iniLINE CrossEX (공용 모듈)", vendor: "iniLINE",
           paths: ["/Applications/CrossEX/crossex", "/Applications/CrossWarpEX", "/Library/Application Support/iniLINE/CrossEX/crossex",
+                  "/Applications/CrossEX/touchenex", "/Library/Application Support/iniLINE/CrossEX/touchenex", "/Library/Internet Plug-Ins/npraontouchenex.plugin",
+                  "/Library/Google/Chrome/NativeMessagingHosts/kr.co.raon.touchenex.json",
+                  "/Library/Application Support/Mozilla/NativeMessagingHosts/kr.co.raon.touchenex.firefox.json",
+                  "/Library/raon_touchenex_Install.pkg", "/Library/CrossEXService_Install.pkg",
                   "~/Library/Preferences/com.iniline.*", "~/Library/Preferences/kr.co.iniline.*"],
-          launchd: ["com.iniline.*", "kr.co.iniline.*"], receipts: ["kr.co.iniline.", "com.iniline."], certs: ["iniLINE CrossEX"]),
+          launchd: ["com.iniline.*", "kr.co.iniline.*"], receipts: ["kr.co.iniline.pkg.CrossEX", "kr.co.iniline.crossex", "com.iniline."], certs: ["iniLINE CrossEX"]),
     .init(id: "veraport", name: "Veraport", vendor: "Wizvera",
           paths: ["/Applications/Veraport", "/Library/Application Support/wizvera/veraport", "/Library/Internet Plug-Ins/Veraport.plugin",
                   "~/Library/Preferences/com.wizvera.veraport*"],
@@ -56,23 +69,31 @@ let securityCatalog: [SecurityProduct] = [
           paths: ["/Library/Internet Plug-Ins/keysharpbiz.plugin", "/Applications/keysharpbiz", "/Applications/keysharpnxbiz"],
           launchd: ["com.wizvera.keysharpbiz*"], receipts: ["com.wizvera.keysharpbiz"]),
     .init(id: "ipinside", name: "IPinside LWS Agent", vendor: "Interezen",
-          paths: ["/Applications/IPinside.app", "~/Library/Preferences/com.interezen.*"],
-          launchd: ["com.interezen.*", "com.nwsdeamond.*"], receipts: ["com.interezen."], certs: ["INTEREZEN CA"]),
+          paths: ["/Applications/IPinside.app", "~/Library/Preferences/com.interezen.*",
+                  // the older NPAPI agent
+                  "/Applications/IPinside", "/Library/Internet Plug-Ins/NPI3GManager.plugin"],
+          launchd: ["com.interezen.*", "com.nwsdeamond.*"], receipts: ["com.interezen.", "I3GManager.Plugin.ipinsideAgent"], certs: ["INTEREZEN CA"]),
     .init(id: "anysign", name: "AnySign4PC", vendor: "SoftForum (Hancom Secure)",
           paths: ["/Applications/SoftForum", "/Library/Application Support/SoftForum", "~/Library/Application Support/SoftForum", "~/Library/Preferences/com.softforum.*"],
-          launchd: ["com.softforum.*"], receipts: ["com.softforum."], certs: ["Hancom Secure Root"]),
+          launchd: ["com.softforum.*"], receipts: ["com.softforum.anysign"], certs: ["Hancom Secure Root"]),
+    // V1 and the older Netizen / Online Security v6.0 (NPAPI plug-in).
     .init(id: "nprotect", name: "nProtect Online Security", vendor: "INCA Internet",
           paths: ["/Applications/nProtect", "/Library/Application Support/nProtect", "/Library/Application Support/INCA*",
                   "/Library/PrivilegedHelperTools/com.nprotect.*", "/tmp/nProtect", "~/Library/Caches/com.nprotect.*", "~/Library/Caches/*.com.nprotect.*",
-                  "~/Library/Preferences/com.nprotect.*", "~/Library/Preferences/com.inca.*"],
-          launchd: ["com.nprotect.*", "com.inca.*"], receipts: ["com.nprotect."], certs: ["INCA Internet"]),
+                  "~/Library/Preferences/com.nprotect.*", "~/Library/Preferences/com.inca.*",
+                  "/Library/Internet Plug-Ins/nosstt60.plugin", "/Library/Internet Plug-Ins/nProtectNetizenNPI.bundle"],
+          launchd: ["com.nprotect.*", "com.inca.*"], receipts: ["com.nprotect.nprotectOnlineSecurity"], certs: ["INCA Internet"]),
     .init(id: "magicline", name: "MagicLine4NX", vendor: "DreamSecurity",
           paths: ["/Applications/MagicLine4NX", "/Applications/NTSMagicLineNP.app", "/Applications/NTSMagicLineNP", "/Applications/DreamSecurity",
-                  "/Library/Application Support/DreamSecurity", "/Library/Application Support/MagicLine*", "~/Library/Preferences/com.dreamsecurity.*"],
-          launchd: ["com.dreamsecurity.*"], receipts: ["com.dreamsecurity."], certs: ["Dreamsecurity ROOT CA"]),
+                  "/Library/Application Support/DreamSecurity", "/Library/Application Support/MagicLine*",
+                  "~/Library/Preferences/com.dreamsecurity.MagicLine*", "~/Library/Preferences/com.dreamsecurity.NTSMagicLine*"],
+          launchd: ["com.dreamsecurity.MagicLine*", "com.dreamsecurity.NTSMagicLine*"],
+          receipts: ["com.dreamsecurity.MagicLine", "com.dreamsecurity.NTSMagicLine"], certs: ["Dreamsecurity ROOT CA"]),
     .init(id: "markany", name: "MarkAny MaSafeViewer / ePageSafer", vendor: "MarkAny",
           paths: ["/Applications/MaSafeViewer.app", "/Applications/MDMBroker.app", "/Applications/MarkAnyEPS", "/Applications/ePageSafer*", "/Library/markanyTemp",
-                  "/Library/Application Support/MarkAny*", "~/Library/Preferences/com.markany.*"],
+                  "/Library/Application Support/MarkAny*", "~/Library/Preferences/com.markany.*",
+                  // MaSafeBrowser, the older NPAPI screen-capture blocker
+                  "/Library/markany", "/Library/Internet Plug-Ins/npMaSafeBrowser*.plugin"],
           launchd: ["com.markany.*"], receipts: ["com.markany."]),
     .init(id: "secukit", name: "SecuKit NXS", vendor: "KICA",
           paths: ["/Applications/kica/secukitnx.app", "/Applications/kica/Uninstaller.app", "~/Library/Preferences/com.kica.*"],
@@ -84,13 +105,50 @@ let securityCatalog: [SecurityProduct] = [
     .init(id: "vestcert", name: "VestCert", vendor: "Yettiesoft",
           paths: ["/Applications/VestCert.app", "/Applications/Yettiesoft*", "~/Library/MangoWire", "~/Library/Preferences/com.yettiesoft.*"],
           launchd: ["com.yettiesoft.*"], receipts: ["com.yettiesoft."], certs: ["MangoWire"]),
-    // Not verified: no macOS installer could be found for these two.
     .init(id: "xecureweb", name: "XecureWeb", vendor: "SoftForum",
-          paths: ["/Applications/XecureWebUnified", "/Applications/XecureWeb", "/Library/Application Support/XecureWeb*"],
-          launchd: ["com.xecure*"], receipts: ["com.xecure"]),
+          paths: ["/Applications/XecureWebUnified", "/Applications/XecureWeb", "/Library/Application Support/XecureWeb*",
+                  "/Library/Internet Plug-Ins/npXecureMacuxNPPlugin.plugin"],
+          launchd: ["com.xecure*"], receipts: ["com.softforum.xecureweb", "com.xecure"]),
+    // Not verified: no macOS installer could be found.
     .init(id: "unisign", name: "UniSign", vendor: "CrossCert",
           paths: ["/Applications/UniSign*", "/Library/Application Support/CrossCert*", "~/Library/Preferences/com.crosscert.*"],
           launchd: ["com.crosscert.*"], receipts: ["com.crosscert."]),
+    .init(id: "kscertrelay", name: "KSCertRelay nx (인증서 복사)", vendor: "RaonSecure",
+          paths: ["/Applications/KSCertRelay", "/Library/KSCertRelay.app", "/Library/KSCertRelayQr.app", "/Library/KSCertRelayMain.dylib",
+                  "/Library/nxwirelesscert.json", "/Library/Application Support/raonsecure/nxwirelesscert",
+                  "/Library/Application Support/iniLINE/CrossEX/touchenex/nxwirelesscert.json", "~/Library/Preferences/com.raonsecure.KSCertRelay*"],
+          receipts: ["com.raonsecure.KSCertRelay"]),
+    .init(id: "nxfirewall", name: "TouchEn nxFirewall", vendor: "RaonSecure",
+          paths: ["/Applications/raonsecure/TouchEnnxFirewall", "/Library/Extensions/TEFWNet.kext"],
+          launchd: ["com.osxkernel.TEFWNet*"], receipts: ["com.mygreatcompany.pkg.TEFWInstaller"]),
+    // ponytail: its postinstall also writes an Accessibility grant into the system TCC.db, which SIP keeps out of reach.
+    .init(id: "nxweb", name: "TouchEn nxWeb (화면 캡처 방지)", vendor: "RaonSecure",
+          paths: ["/Applications/raonsecure/TouchEnnxWeb", "~/Library/Preferences/com.raonsecure.TouchEN*"],
+          launchd: ["com.raon.TouchEN_TEWeb*"], receipts: ["com.raonsecure.TouchEN-TEWeb"]),
+    .init(id: "raonk", name: "RAON K (대용량 파일 전송)", vendor: "RAONWIZ",
+          paths: ["/Applications/raonk", "/Applications/raonk.app"],
+          launchd: ["com.raonwiz.raonk*"], receipts: ["com.mygreatcompany.pkg.kuploadrelease"], certs: ["RAON K CA"]),
+    // Hometax modules; they share their root CA with MagicLine4NX.
+    .init(id: "ntsmagicxml", name: "NTSMagicXMLSecurityNP (홈택스 전자서명)", vendor: "DreamSecurity",
+          paths: ["/Applications/NTSMagicXMLSecurityNP.app"],
+          launchd: ["com.dreamsecurity.NTSMagicXMLSecurityNP*"], receipts: ["com.dreamsecurity.NTSFileCryptNP.ntsmagicxmlsecuritynp"],
+          certs: ["Dreamsecurity ROOT CA"]),
+    .init(id: "ntsfilecrypt", name: "NTSFileCryptNP (홈택스 신고파일 암호화)", vendor: "DreamSecurity",
+          paths: ["/Applications/NTSFileCryptNP.app"],
+          launchd: ["com.dreamsecurity.NTSFileCryptNP*"], receipts: ["com.dreamsecurity.NTSFileCryptNP.ntsfilecryptnp"], certs: ["Dreamsecurity ROOT CA"]),
+    // ponytail: its /Applications/Viewer.app (com.designmade.printmade3) is left out, the name is too generic to match by path.
+    .init(id: "printmade3", name: "Printmade3 (웹 인쇄)", vendor: "Nagosoft",
+          paths: ["/Library/Internet Plug-Ins/Printmade3", "/Library/Internet Plug-Ins/Printmade3NPPlugin.plugin", "/Applications/PTMAphid.app"],
+          receipts: ["com.designmade.printmade3ForMac"]),
+    .init(id: "certshare", name: "CertShare xFree (인증서 복사)", vendor: "SoftForum (Hancom Secure)",
+          paths: ["/Applications/CertShareXFree", "~/Library/Preferences/com.softforum.certshare*"], receipts: ["com.softforum.certsharexfree"]),
+    .init(id: "seculog", name: "nProtect SecuLog", vendor: "INCA Internet",
+          paths: ["/Applications/nProtect SLM", "/Library/Internet Plug-Ins/npefdsplugin.plugin", "~/INCAInternet"],
+          receipts: ["com.nprotect.nprotectEfds"]),
+    .init(id: "certconverter", name: "Delfino CertConverter (인증서 변환)", vendor: "Wizvera", paths: ["/Applications/CertConverter.app"]),
+    .init(id: "aosfirewall", name: "AhnLab Online Security 방화벽", vendor: "AhnLab",
+          paths: ["/Applications/AhnLab/ASP", "/Library/Internet Plug-Ins/npaosmgr.plugin"],
+          launchd: ["com.aos.firewall*"], receipts: ["com.ahnlab.firewall"]),
 ]
 
 struct SecurityHit: Identifiable {
@@ -140,8 +198,9 @@ func appLeftovers(in found: [URL]) -> [URL] {
 
 // "Also find hidden ones not in the list": vendor keywords in the usual install folders. Report only, starts unchecked.
 let hiddenKeywords = "ahnlab|astx|raon|touchen|nxkey|wizvera|veraport|delfino|initech|inisafe|iniline|crossweb|crossex|crosswarp|interezen|"
-    + "ipinside|softforum|anysign|xecure|nprotect|inca\\.|dreamsecurity|magicline|markany|epagesafer|masafer|ksign|crosscert|unisign|"
-    + "yettie|vestcert|secukit|sgasol|kica|signgate|moasign|ubikey|hancomwith|securekey|keysharp|nppfs|ezpdf"
+    + "ipinside|softforum|anysign|xecure|nprotect|inca\\.|dreamsecurity|magicline|markany|epagesafer|masafe|ksign|crosscert|unisign|"
+    + "yettie|vestcert|secukit|sgasol|kica|signgate|moasign|ubikey|hancomwith|securekey|keysharp|nppfs|ezpdf|"
+    + "kscertrelay|nxwireless|tefw|ntsmagic|ntsfilecrypt|printmade|ptmaphid|certshare|incainternet|npefds|i3gmanager|certconverter|com\\.aos\\."
 
 func hiddenSuspects(excluding known: [URL], home: String = NSHomeDirectory()) -> [URL] {
     let dirs = ["/Library/LaunchDaemons", "/Library/LaunchAgents", home + "/Library/LaunchAgents", "/Applications",
@@ -175,15 +234,17 @@ struct Cleanup: Identifiable {
 }
 
 func makeCleanup(_ hits: [SecurityHit], certs: Bool, receipts: Bool, uid: uid_t = getuid()) -> Cleanup {
-    var seen = Set<String>()
+    var seen = Set<String>(), certSeen = Set<String>()
     let all = hits.flatMap(\.files).filter { !isSIPRestricted($0) && seen.insert($0.path).inserted }
+    // Several products trust the same root CA (MagicLine4NX and the Hometax modules): delete it once.
+    let rootCerts = certs ? hits.flatMap(\.certs).filter { certSeen.insert($0.sha1).inserted } : []
     let top = all.filter { u in !seen.contains { u.path.hasPrefix($0 + "/") } }  // nxKey sits inside CrossEX's folder
     let root = top.filter { needsAdmin($0, uid: uid) }
     var c = Cleanup(names: hits.map(\.product.name), userFiles: top.filter { !needsAdmin($0, uid: uid) })
-    c.plan = privilegedPlan(files: root, receipts: receipts ? hits.flatMap(\.receipts) : [], certs: certs ? hits.flatMap(\.certs) : [], uid: uid)
+    c.plan = privilegedPlan(files: root, receipts: receipts ? hits.flatMap(\.receipts) : [], certs: rootCerts, uid: uid)
     c.fileCount = c.userFiles.count + root.count - c.plan.skipped.count
     c.jobCount = top.filter { $0.path.contains("/LaunchDaemons/") || $0.path.contains("/LaunchAgents/") }.count
-    c.certCount = certs ? hits.flatMap(\.certs).count : 0
+    c.certCount = rootCerts.count
     c.receiptCount = receipts ? hits.flatMap(\.receipts).count : 0
     return c
 }

@@ -3,8 +3,9 @@ import Foundation
 // End-to-end check against the real ~/Library with a throwaway app "SweepDummy" (com.example.SweepDummy).
 // Creates and removes only paths named after the dummy or "e2etest"; trashed items land in ~/.Trash.
 //   ./build.sh test --e2e     plant, scan, trash, verify, clean (no UI)
-//   ./build.sh test --plant   plant, then drop .build/e2e/SweepDummy.app on AppSweep and press Move to Trash
-//   ./build.sh test --verify  check what the UI run left behind
+//   ./build.sh test --plant   plant, then open the app: the fake leftovers show up under Veraport and TouchEn nxKey.
+//                             Remove those two rows (on a Mac with real leftovers they are in the same rows)
+//   ./build.sh test --verify  check that the UI removed the fake leftovers
 //   ./build.sh test --clean   remove every dummy trace
 enum E2E {
     static let id = "com.example.SweepDummy", agent = "com.example.SweepDummy.agent"
@@ -49,6 +50,11 @@ enum E2E {
         chflags(lib.appending(path: removed[0]).path, UInt32(UF_IMMUTABLE))
         sh("/bin/launchctl", "bootstrap", "gui/\(getuid())", lib.appending(path: "LaunchAgents/\(agent).plist").path)
         print("planted \(app.path) and its traces in ~/Library")
+    }
+
+    // Manual UI run: only the fake security leftovers are reachable from the window.
+    static func verifyUI() {
+        for (product, rel) in security.sorted(by: <) { check(!exists(rel), "\(product): ~/Library/\(rel) removed") }
     }
 
     static func verify() {

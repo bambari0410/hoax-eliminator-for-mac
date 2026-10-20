@@ -3,7 +3,7 @@ import Foundation
 switch CommandLine.arguments.dropFirst().first {
 case "--e2e": try E2E.run(); exit(E2E.failures == 0 ? 0 : 1)
 case "--plant": try E2E.plant(); exit(0)
-case "--verify": E2E.verify(); exit(E2E.failures == 0 ? 0 : 1)
+case "--verify": E2E.verifyUI(); exit(E2E.failures == 0 ? 0 : 1)
 case "--clean": E2E.clean(); exit(0)
 default: break
 }

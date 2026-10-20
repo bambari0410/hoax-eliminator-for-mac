@@ -2,9 +2,9 @@
 # ./build.sh          -> ".build/Hoax Eliminator for Mac.app" for this Mac's architecture
 # ./build.sh test     -> run the matching self-check (fake filesystem, nothing real is touched)
 # ./build.sh test --e2e | --plant | --verify | --clean  -> real ~/Library test with a dummy app, see Tests/E2E.swift
-# ./build.sh package  -> ../dist/Hoax-Eliminator-for-Mac-<version>.zip and .sha256
-#                        universal (Apple Silicon + Intel), ad-hoc signed, NOT notarized: users approve it once
-#                        in System Settings > Privacy & Security > Open Anyway (see Packaging/INSTALL.txt)
+# ./build.sh package  -> ../dist/Hoax-Eliminator-for-Mac-<version>.zip
+#                        universal (Apple Silicon + Intel), ad-hoc signed, NOT notarized: users clear the quarantine
+#                        flag once with xattr, or use Open Anyway in System Settings (see Packaging/INSTALL.txt)
 set -e
 cd "$(dirname "$0")"
 mkdir -p .build
@@ -43,4 +43,4 @@ mkdir -p "$STAGE" ../dist
 ditto "$APP" "$STAGE/Hoax Eliminator for Mac.app"
 cp Packaging/INSTALL.txt Packaging/THIRD-PARTY-NOTICES.txt "$STAGE/"
 ditto -c -k --norsrc --noextattr --keepParent "$STAGE" "../dist/$NAME.zip"
-(cd ../dist && shasum -a 256 "$NAME.zip" > "$NAME.zip.sha256" && cat "$NAME.zip.sha256")
+echo "../dist/$NAME.zip"

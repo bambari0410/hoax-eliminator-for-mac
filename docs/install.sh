@@ -10,9 +10,14 @@ dest=${HOAX_DEST:-/Applications}
 [ -w "$dest" ] || { dest="$HOME/Applications"; mkdir -p "$dest"; }
 
 echo "최신 버전을 찾는 중이에요…"
-url=$(curl -fsSL "https://api.github.com/repos/$repo/releases/latest" \
-  | grep -o '"browser_download_url": *"[^"]*\.zip"' | head -n 1 | cut -d '"' -f 4)
-[ -n "$url" ] || { echo "최신 버전을 찾지 못했어요. https://github.com/$repo/releases 에서 직접 받아 주세요." >&2; exit 1; }
+# releases/latest redirects to the newest tag. Unlike the REST API it has no 60-requests-an-hour limit per IP,
+# which a shared office address runs out of. Assets follow build.sh: Hoax-Eliminator-for-Mac-<version>.zip under tag v<version>.
+tag=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "https://github.com/$repo/releases/latest" | sed 's|.*/tag/||')
+case "$tag" in
+  v[0-9]*) ;;
+  *) echo "최신 버전을 찾지 못했어요. https://github.com/$repo/releases 에서 직접 받아 주세요." >&2; exit 1 ;;
+esac
+url="https://github.com/$repo/releases/download/$tag/Hoax-Eliminator-for-Mac-${tag#v}.zip"
 
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT

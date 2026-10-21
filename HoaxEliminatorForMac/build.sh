@@ -37,6 +37,7 @@ codesign -s - --force "$APP"
 [ "$1" = package ] || { echo "$APP"; exit 0; }
 
 VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Info.plist)
+# docs/install.sh rebuilds this asset URL from the release tag: keep the name and tag the release v$VERSION.
 NAME="Hoax-Eliminator-for-Mac-$VERSION"
 STAGE=".build/package/$NAME"
 mkdir -p "$STAGE" ../dist
